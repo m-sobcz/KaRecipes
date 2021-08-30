@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.UI.ViewModels
 {
-    class MainViewModel : ViewModelBase
+    public class MainWindowViewModel : ViewModelBase
     {
     }
 }

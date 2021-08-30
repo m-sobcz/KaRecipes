@@ -6,6 +6,8 @@
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              DispatcherUnhandledException="Application_DispatcherUnhandledException">
     <Application.Resources>
-         
+        <vm:ViewModelLocator
+            xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels" 
+            x:Key="Locator" />
     </Application.Resources>
 </Application>

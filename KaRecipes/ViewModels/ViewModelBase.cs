@@ -6,6 +6,6 @@ namespace KaRecipes.UI.ViewModels
 {
     public class ViewModelBase : ObservedObject
     {
-        public ShowInfo showInfo = new ShowInfo();
+        public ShowInfo showInfo = new();
     }
 }

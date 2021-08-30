@@ -1,4 +1,5 @@
 ﻿using KaRecipes.UI.Models;
+using KaRecipes.UI.ViewModels;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -33,6 +34,10 @@ namespace KaRecipes
             ServiceProvider = serviceCollection.BuildServiceProvider();
             ServiceProvider.GetRequiredService<MainWindow>().Show();
         }
+        private void ShowInfo_ShowInformation(object sender, string text, string caption)
+        {
+            MessageBox.Show(text, caption);
+        }
 
         private void ConfigureServices(IServiceCollection services)
         {
@@ -41,7 +46,7 @@ namespace KaRecipes
             //Models
 
             //ViewModels
-
+            services.AddTransient<MainWindowViewModel>();
             //Views
             services.AddTransient<MainWindow>();
             //Logic
