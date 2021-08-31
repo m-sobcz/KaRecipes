@@ -3,10 +3,26 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:KaRecipes.UI.Views"
              mc:Ignorable="d" 
+                     xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:KaRecipes.UI.Views"
+        xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels"
+        xmlns:convert="clr-namespace:KaRecipes.UI.Converters"
+        xmlns:behavior="clr-namespace:KaRecipes.UI.Behaviors" 
+             DataContext="{Binding Source={StaticResource Locator}, Path=RecipesTabViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+    <UserControl.Resources>
+        <!--Przyciski-->
+        <sys:String x:Key="Open">_Otworz</sys:String>
+    </UserControl.Resources>
+    <WrapPanel HorizontalAlignment="Center" Orientation="Vertical">
+        <TextBox Name="OpenedFileName" Text="{Binding OpenedFileName}"  
+                     Background="{DynamicResource {x:Static SystemColors.InfoColor}}" 
+                     Height="100" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" >
+        </TextBox>
+        <Button Content="{StaticResource Open}" Height="50" Width="100" Command="{Binding OpenFileCommand}"  Margin="5"/>
+    </WrapPanel>
+
+        
 </UserControl>

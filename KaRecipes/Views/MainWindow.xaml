@@ -18,15 +18,10 @@
 
         <!--Opcje Menu-->
         <sys:String x:Key="File">_Plik</sys:String>
-        <sys:String x:Key="Tools">_Narzędzia</sys:String>
-        <sys:String x:Key="Help">P_omoc</sys:String>
+        <sys:String x:Key="Info">_Informacje</sys:String>
         <sys:String x:Key="Exit">_Zamknij</sys:String>
-        <sys:String x:Key="Initialize">_Inicjalizuj</sys:String>
-        <sys:String x:Key="Start">_Start</sys:String>
-        <sys:String x:Key="Stop">S_top</sys:String>
         <sys:String x:Key="ViewHelp">W_yświetl Pomoc</sys:String>
-        <sys:String x:Key="About">Informacje o _aplikacji</sys:String>
-        <sys:String x:Key="Send">_Wyślij</sys:String>
+        <sys:String x:Key="About">O _aplikacji</sys:String>
         <!--Zakladki-->
         <sys:String x:Key="Recipes">_Receptury</sys:String>
         <sys:String x:Key="Parameters">_Parametry</sys:String>
@@ -41,7 +36,7 @@
                     <MenuItem Header="{StaticResource File}">
                         <MenuItem x:Name="Exit" Header="{StaticResource Exit}" Command="{Binding ClosingCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="{StaticResource Help}">
+                    <MenuItem Header="{StaticResource Info}">
                         <MenuItem x:Name="ViewHelp" Header="{StaticResource ViewHelp}" Command="{Binding HelpCommand}"/>
                         <MenuItem x:Name="About" Header="{StaticResource About}" Command="{Binding AboutCommand}"/>
                     </MenuItem>
@@ -59,7 +54,6 @@
         </DockPanel>
         <DockPanel>
             <TabControl Background="Azure" Margin="5">
-
                 <TabItem Name="recipesTab" >
                     <TabItem.Header>
                         <WrapPanel Orientation="Horizontal">
@@ -68,7 +62,38 @@
                     </TabItem.Header>
                     <local:RecipesTab/>
                 </TabItem>
-
+                <TabItem Name="parametersTab" >
+                    <TabItem.Header>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{StaticResource Parameters}"/>
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <local:ParametersTab/>
+                </TabItem>
+                <TabItem Name="databaseTab" >
+                    <TabItem.Header>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{StaticResource Database}"/>
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <local:DatabaseTab/>
+                </TabItem>
+                <TabItem Name="diagnosticsTab" >
+                    <TabItem.Header>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{StaticResource Diagnostics}"/>
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <local:DiagnosticsTab/>
+                </TabItem>
+                <TabItem Name="settingsTab" >
+                    <TabItem.Header>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{StaticResource Settings}"/>
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <local:SettingsTab/>
+                </TabItem>
             </TabControl>
         </DockPanel>
     </DockPanel>

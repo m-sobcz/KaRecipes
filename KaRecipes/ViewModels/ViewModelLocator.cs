@@ -19,6 +19,13 @@ namespace KaRecipes.UI.ViewModels
                 return serviceProvider.GetRequiredService<MainWindowViewModel>();
             }
         }
-        
+        public RecipesTabViewModel RecipesTabViewModel
+        {
+            get
+            {
+                return serviceProvider.GetRequiredService<RecipesTabViewModel>();
+            }
+        }
+
     }
 }

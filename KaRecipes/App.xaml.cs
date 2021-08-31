@@ -3,6 +3,7 @@ using KaRecipes.UI.ViewModels;
 using KaRecipes.UI.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -34,11 +35,26 @@ namespace KaRecipes
             ConfigureServices(serviceCollection);
             ServiceProvider = serviceCollection.BuildServiceProvider();
             ServiceProvider.GetRequiredService<MainWindowViewModel>().showInfo.ShowInformation += ShowInfo_ShowInformation;
+            ServiceProvider.GetRequiredService<RecipesTabViewModel>().OpenFile += App_OpenFile;
             ServiceProvider.GetRequiredService<MainWindow>().Show();
         }
+
+        private string App_OpenFile(object sender)
+        {
+            OpenFileDialog openFileDialog = new();
+            openFileDialog.InitialDirectory = AppContext.BaseDirectory;
+            if (openFileDialog.ShowDialog()==true)
+            {
+                var fileContent= File.ReadAllText(openFileDialog.FileName);
+                MessageBox.Show(fileContent);
+            }
+            var fullFileName = openFileDialog.FileName;
+            return Path.GetFileNameWithoutExtension(fullFileName);
+        }
+
         private void ShowInfo_ShowInformation(object sender, string text, string caption)
         {
-            MessageBox.Show(text, caption);
+            MessageBox.Show(text, caption);//! file content
         }
 
         private void ConfigureServices(IServiceCollection services)
