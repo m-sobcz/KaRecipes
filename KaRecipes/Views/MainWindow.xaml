@@ -1,15 +1,75 @@
-﻿<Window x:Class="KaRecipes.MainWindow"
+﻿<Window x:Class="KaRecipes.UI.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:KaRecipes.UI"
         mc:Ignorable="d"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:KaRecipes.UI.Views"
         xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels"
-        Title="MainWindow" Height="450" Width="800"
-    DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}"
+        xmlns:convert="clr-namespace:KaRecipes.UI.Converters"
+        xmlns:behavior="clr-namespace:KaRecipes.UI.Behaviors" 
+        Title="{StaticResource ApplicationTitle}"
+        Height="800" Width="1024"  WindowStartupLocation="CenterScreen" 
+        DataContext="{Binding Source={StaticResource Locator}, Path=MainWindowViewModel}"
         >
-    <Grid>
+    <Window.Resources>
 
-    </Grid>
+        <!--Opcje Menu-->
+        <sys:String x:Key="File">_Plik</sys:String>
+        <sys:String x:Key="Tools">_Narzędzia</sys:String>
+        <sys:String x:Key="Help">P_omoc</sys:String>
+        <sys:String x:Key="Exit">_Zamknij</sys:String>
+        <sys:String x:Key="Initialize">_Inicjalizuj</sys:String>
+        <sys:String x:Key="Start">_Start</sys:String>
+        <sys:String x:Key="Stop">S_top</sys:String>
+        <sys:String x:Key="ViewHelp">W_yświetl Pomoc</sys:String>
+        <sys:String x:Key="About">Informacje o _aplikacji</sys:String>
+        <sys:String x:Key="Send">_Wyślij</sys:String>
+        <!--Zakladki-->
+        <sys:String x:Key="Recipes">_Receptury</sys:String>
+        <sys:String x:Key="Parameters">_Parametry</sys:String>
+        <sys:String x:Key="Database">_Baza Danych</sys:String>
+        <sys:String x:Key="Diagnostics">_Diagnostyka</sys:String>
+        <sys:String x:Key="Settings">_Ustawienia</sys:String>
+    </Window.Resources>
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+            <DockPanel Name="TopMenu" DockPanel.Dock="Top">
+                <Menu  Height="Auto" DockPanel.Dock="Top">
+                    <MenuItem Header="{StaticResource File}">
+                        <MenuItem x:Name="Exit" Header="{StaticResource Exit}" Command="{Binding ClosingCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="{StaticResource Help}">
+                        <MenuItem x:Name="ViewHelp" Header="{StaticResource ViewHelp}" Command="{Binding HelpCommand}"/>
+                        <MenuItem x:Name="About" Header="{StaticResource About}" Command="{Binding AboutCommand}"/>
+                    </MenuItem>
+                </Menu>
+            </DockPanel>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom">
+            <TextBox Name="ApplicationLog" Text=""  
+                     Background="{DynamicResource {x:Static SystemColors.InfoColor}}" 
+                     Height="75" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" >
+                <b:Interaction.Behaviors>
+                    <behavior:TextBoxAutoScroll/>
+                </b:Interaction.Behaviors>
+            </TextBox>
+        </DockPanel>
+        <DockPanel>
+            <TabControl Background="Azure" Margin="5">
+
+                <TabItem Name="recipesTab" >
+                    <TabItem.Header>
+                        <WrapPanel Orientation="Horizontal">
+                            <Label Content="{StaticResource Recipes}"/>
+                        </WrapPanel>
+                    </TabItem.Header>
+                    <local:RecipesTab/>
+                </TabItem>
+
+            </TabControl>
+        </DockPanel>
+    </DockPanel>
 </Window>

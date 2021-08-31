@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace KaRecipes.UI.Views
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for ParametersTab.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ParametersTab : UserControl
     {
-        public MainWindow()
+        public ParametersTab()
         {
             InitializeComponent();
         }

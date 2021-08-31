@@ -1,5 +1,6 @@
 ﻿using KaRecipes.UI.Models;
 using KaRecipes.UI.ViewModels;
+using KaRecipes.UI.Views;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -32,6 +33,7 @@ namespace KaRecipes
             ServiceCollection serviceCollection = new();
             ConfigureServices(serviceCollection);
             ServiceProvider = serviceCollection.BuildServiceProvider();
+            ServiceProvider.GetRequiredService<MainWindowViewModel>().showInfo.ShowInformation += ShowInfo_ShowInformation;
             ServiceProvider.GetRequiredService<MainWindow>().Show();
         }
         private void ShowInfo_ShowInformation(object sender, string text, string caption)
@@ -46,9 +48,19 @@ namespace KaRecipes
             //Models
 
             //ViewModels
-            services.AddTransient<MainWindowViewModel>();
+            services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<RecipesTabViewModel>();
+            services.AddSingleton<ParametersTabViewModel>();
+            services.AddSingleton<DatabaseTabViewModel>();
+            services.AddSingleton<DiagnosticsTabViewModel>();
+            services.AddSingleton<SettingsTabViewModel>();
             //Views
-            services.AddTransient<MainWindow>();
+            services.AddSingleton<MainWindow>();
+            services.AddSingleton<RecipesTab>();
+            services.AddSingleton<ParametersTab>();
+            services.AddSingleton<DatabaseTab>();
+            services.AddSingleton<DiagnosticsTab>();
+            services.AddSingleton<SettingsTab>();
             //Logic
 
         }

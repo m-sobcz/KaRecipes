@@ -9,5 +9,6 @@
         <vm:ViewModelLocator
             xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels" 
             x:Key="Locator" />
+        <sys:String x:Key="ApplicationTitle">KaRecipes</sys:String>
     </Application.Resources>
 </Application>
