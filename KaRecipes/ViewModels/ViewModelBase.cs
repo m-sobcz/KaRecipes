@@ -6,6 +6,11 @@ namespace KaRecipes.UI.ViewModels
 {
     public class ViewModelBase : ObservedObject
     {
-        public ShowInfo showInfo = new();
+        public event ShowInfoEventHandler ShowInformation;
+        public delegate void ShowInfoEventHandler(object sender, string text, string caption);
+        public void ShowInfo(string text, string caption = "---")
+        {
+            ShowInformation?.Invoke(this, text, caption);
+        }
     }
 }

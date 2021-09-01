@@ -48,7 +48,7 @@ namespace KaRecipes.UI.ViewModels
                             //    currentVersion = "???";
                             //}
                             string applicationInfo = $"-----\nKARecipes v.{currentVersion}\n-----\n\nProgram do obsługi receptur na liniach SMA\n\n2021 Kongsberg Automotive";
-                            showInfo.Show(applicationInfo, "Informacje o aplikacji");
+                            ShowInfo(applicationInfo, "Informacje o aplikacji");
                         },
                         o => true
                         );
@@ -65,7 +65,7 @@ namespace KaRecipes.UI.ViewModels
                     helpCommand = new RelayCommand(
                         o =>
                         {
-                            showInfo.Show("Brak pomocy dla aktualnej wersji aplikacji.", "Pomoc");
+                            ShowInfo("Brak pomocy dla aktualnej wersji aplikacji.", "Pomoc");
                         },
                         o => true
                         );

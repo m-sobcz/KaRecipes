@@ -34,7 +34,7 @@ namespace KaRecipes
             ServiceCollection serviceCollection = new();
             ConfigureServices(serviceCollection);
             ServiceProvider = serviceCollection.BuildServiceProvider();
-            ServiceProvider.GetRequiredService<MainWindowViewModel>().showInfo.ShowInformation += ShowInfo_ShowInformation;
+            ServiceProvider.GetRequiredService<MainWindowViewModel>().ShowInformation += ShowInfo_ShowInformation;
             ServiceProvider.GetRequiredService<RecipesTabViewModel>().OpenFile += App_OpenFile;
             ServiceProvider.GetRequiredService<MainWindow>().Show();
         }
