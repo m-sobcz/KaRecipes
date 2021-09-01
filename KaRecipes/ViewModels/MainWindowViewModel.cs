@@ -9,16 +9,20 @@ namespace KaRecipes.UI.ViewModels
 {
     public class MainWindowViewModel : ViewModelBase
     {
+        
         private ICommand closingCommand;
         private ICommand aboutCommand;
         private ICommand helpCommand;
+        public MainWindowViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand) : base(getCommand) 
+        {
+        }
         public ICommand ClosingCommand
         {
             get
             {
                 if (closingCommand == null)
                 {
-                    closingCommand = new RelayCommand(
+                    closingCommand = getCommand(
                         o =>
                         {
                             Environment.Exit(0);
@@ -35,7 +39,7 @@ namespace KaRecipes.UI.ViewModels
             {
                 if (aboutCommand == null)
                 {
-                    aboutCommand = new RelayCommand(
+                    aboutCommand = getCommand(
                         o =>
                         {
                             string currentVersion = "?";
@@ -62,7 +66,7 @@ namespace KaRecipes.UI.ViewModels
             {
                 if (helpCommand == null)
                 {
-                    helpCommand = new RelayCommand(
+                    helpCommand = getCommand(
                         o =>
                         {
                             ShowInfo("Brak pomocy dla aktualnej wersji aplikacji.", "Pomoc");

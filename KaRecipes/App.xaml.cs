@@ -12,7 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-
+using System.Windows.Input;
 
 namespace KaRecipes
 {
@@ -60,10 +60,10 @@ namespace KaRecipes
         private void ConfigureServices(IServiceCollection services)
         {
             services.Configure<AppSettings>(Configuration.GetSection(nameof(AppSettings)));
-
             //Models
 
             //ViewModels
+            services.AddTransient<Func<Action<object>, Func<object, bool>, ICommand>>(sp => (execute, canExecute) => new RelayCommand(execute, canExecute));
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<RecipesTabViewModel>();
             services.AddSingleton<ParametersTabViewModel>();
@@ -80,6 +80,7 @@ namespace KaRecipes
             //Logic
 
         }
+
 
         private void Application_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {

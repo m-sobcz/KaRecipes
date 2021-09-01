@@ -13,13 +13,17 @@ namespace KaRecipes.UI.ViewModels
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate string OpenFileEventHandler(object sender);
+        public RecipesTabViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand) : base(getCommand)
+        {
+
+        }
         public ICommand OpenFileCommand
         {
             get
             {
                 if (openFileCommand == null)
                 {
-                    openFileCommand = new RelayCommand(
+                    openFileCommand = getCommand(
                         o =>
                         {
                             OpenedFileName=OpenFile?.Invoke(this);
