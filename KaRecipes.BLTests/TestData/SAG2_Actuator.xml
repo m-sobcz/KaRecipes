@@ -1,0 +1,15 @@
+<Parameters>
+  <ParameterGroups>
+    <ParameterGroup name="M11">
+      <ParameterGroup name="M11_DB_00_Parameters">
+        <Parameter name="ActualType" value="0" />
+        <Parameter name="MachineCycleTime" value="4500" />
+      </ParameterGroup>
+      <ParameterGroup name="M11_DB_01_Param">
+        <Parameter name="LR_LR_aktiv" value="False" />
+      </ParameterGroup>
+    </ParameterGroup>
+    <ParameterGroup name="M15">
+    </ParameterGroup>
+  </ParameterGroups>
+</Parameters>
