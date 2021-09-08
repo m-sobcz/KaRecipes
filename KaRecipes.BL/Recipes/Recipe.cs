@@ -17,22 +17,23 @@ namespace KaRecipes.BL.Recipes
         readonly string groupNameAttribute = "name";
         readonly string parameterNameAttribute = "name";
         readonly string parameterValueAttribute = "value";
+        public List<ParameterModule> productionLineParameters { get; set; }
         public Recipe()
         {
         }
-        public List<ParameterModule> LoadXml(string path)
+        public int LoadXml(string text)
         {
-            var root = XElement.Load(path);
+            var root = XElement.Parse(text);
             var loadedModules = root.Elements().Elements();
-            List<ParameterModule> newParameterModules = new();
+            productionLineParameters = new();
             foreach (var loadedModule in loadedModules)
             {
                 ParameterModule newParameterModule = LoadParameterModule(loadedModule);
-                newParameterModules.Add(newParameterModule);
+                productionLineParameters.Add(newParameterModule);
             }
-            return newParameterModules;
+            return productionLineParameters.Count;
         }
-        ParameterModule LoadParameterModule(XElement loadedModule) 
+        ParameterModule LoadParameterModule(XElement loadedModule)
         {
             ParameterModule newParameterModule = new()
             {
@@ -45,7 +46,7 @@ namespace KaRecipes.BL.Recipes
             }
             return newParameterModule;
         }
-        ParameterStation LoadParameterStation(XElement loadedStation) 
+        ParameterStation LoadParameterStation(XElement loadedStation)
         {
             ParameterStation newParameterStation = new()
             {
@@ -59,6 +60,45 @@ namespace KaRecipes.BL.Recipes
                 newParameterStation.ParameterSingles.Add(newParameterSingle);
             }
             return newParameterStation;
+        }
+        public string GenerateXml()
+        {
+            XElement xParameterGroups = new("ParameterGroups");
+            foreach (var module in productionLineParameters)
+            {
+                XElement xModule = new("ParameterGroup");
+                xModule.SetAttributeValue("name", module.Name);
+                foreach (var station in module.ParameterStations)
+                {
+                    XElement xStation = new("ParameterGroup");
+                    xStation.SetAttributeValue("name", station.Name);
+                    foreach (var singleParam in station.ParameterSingles)
+                    {
+                        XElement xSingleParam = new("Parameter");
+                        xSingleParam.SetAttributeValue("name", singleParam.Name);
+                        xSingleParam.SetAttributeValue("value", singleParam.Value);
+                        xStation.Add(xSingleParam);
+                    }
+                    xModule.Add(xStation);
+                }
+                xParameterGroups.Add(xModule);
+            }
+            XElement xRoot = new("Parameters", xParameterGroups);
+            return GenerateFormattedXml(xRoot);
+            // SaveXElementToFile(xRoot, path);
+        }
+        string GenerateFormattedXml(XElement xElement)
+        {
+            XmlWriterSettings xmlWriterSettings = new();
+            xmlWriterSettings.OmitXmlDeclaration = true;
+            xmlWriterSettings.Indent = true;
+            // xmlWriterSettings.NewLineOnAttributes = true;
+            StringBuilder stringBuilder = new();
+            using (XmlWriter xw = XmlWriter.Create(stringBuilder, xmlWriterSettings))
+            {
+                xElement.Save(xw);
+            }
+            return stringBuilder.ToString();
         }
     }
 }

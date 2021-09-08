@@ -25,11 +25,16 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="NewFolder\" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Update="TestData\SAG2_Actuator - Copy.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="TestData\SAG2_Actuator.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SAG2_Actuator2.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="TestData\SAG2_Empty.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

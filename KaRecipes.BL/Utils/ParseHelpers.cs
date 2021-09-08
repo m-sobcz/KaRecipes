@@ -24,7 +24,7 @@ namespace KaRecipes.BL.Utils
         public static T ParseXML<T>(this string content) where T : class
         {
             var reader = XmlReader.Create(content.Trim().ToStream(), new XmlReaderSettings());
-            XmlRootAttribute xRoot = new XmlRootAttribute();
+            XmlRootAttribute xRoot = new();
             xRoot.ElementName = "Parameters";
             // xRoot.Namespace = "http://www.cpandl.com";
             xRoot.IsNullable = true;
