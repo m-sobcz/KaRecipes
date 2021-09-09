@@ -10,9 +10,10 @@ namespace KaRecipes.UI.ViewModels
     public class RecipesTabViewModel : ViewModelBase
     {
         public string OpenedFileName { get; set; }
+        public string OpenedFileContent { get; set; }
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
-        public delegate string OpenFileEventHandler(object sender);
+        public delegate (string,string) OpenFileEventHandler(object sender);
         public RecipesTabViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand) : base(getCommand)
         {
 
@@ -26,7 +27,8 @@ namespace KaRecipes.UI.ViewModels
                     openFileCommand = getCommand(
                         o =>
                         {
-                            OpenedFileName=OpenFile?.Invoke(this);
+                            var result =OpenFile?.Invoke(this);
+                            (OpenedFileName, OpenedFileContent) = result.Value;
                             OnPropertyChanged(nameof(OpenedFileName));
                         },
                         o => true

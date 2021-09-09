@@ -39,19 +39,22 @@ namespace KaRecipes
             ServiceProvider.GetRequiredService<MainWindow>().Show();
         }
 
-        private string App_OpenFile(object sender)
+
+        private (string, string) App_OpenFile(object sender)
         {
             OpenFileDialog openFileDialog = new();
             openFileDialog.InitialDirectory = AppContext.BaseDirectory;
-            if (openFileDialog.ShowDialog()==true)
+            string fileContent="";
+            if (openFileDialog.ShowDialog() == true)
             {
-                var fileContent= File.ReadAllText(openFileDialog.FileName);
+                fileContent = File.ReadAllText(openFileDialog.FileName);
                 MessageBox.Show(fileContent);
+                var fullFileName = openFileDialog.FileName;
+                return (fullFileName, fileContent);
             }
-            var fullFileName = openFileDialog.FileName;
-            return Path.GetFileNameWithoutExtension(fullFileName);
+            else return (null, null);
         }
-
+        
         private void ShowInfo_ShowInformation(object sender, string text, string caption)
         {
             MessageBox.Show(text, caption);//! file content
