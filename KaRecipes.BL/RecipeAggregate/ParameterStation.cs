@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.ParameterModuleAggregate
+namespace KaRecipes.BL.RecipeAggregate
 {
     public class ParameterStation
     {

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.ParameterModuleAggregate
+namespace KaRecipes.BL.RecipeAggregate
 {
-    public class ParameterModule : IAggregateRoot
+    public class ParameterSingle
     {
-        public List<ParameterStation> ParameterStations = new();
         public string Name { get; set; }
+        public string Value { get; set; }
     }
 }

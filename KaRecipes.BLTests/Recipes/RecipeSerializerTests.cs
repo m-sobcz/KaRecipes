@@ -1,5 +1,4 @@
 ﻿using Xunit;
-using KaRecipes.BL.Recipes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,15 +8,16 @@ using System.IO;
 using System.Xml.Linq;
 using System.Xml;
 using System.Diagnostics;
-using KaRecipes.BL.ParameterModuleAggregate;
 using KellermanSoftware.CompareNetObjects;
+using KaRecipes.BL.RecipeAggregate;
+using KaRecipes.BL.Serialize;
 
 namespace KaRecipes.BL.Recipes.Tests
 {
-    public class RecipeTests
+    public class RecipeSerializerTests
     {
         [Fact()]
-        public void LoadXml_SampleData_AreEqualAndReturnsCount()
+        public void Deserialize_SampleData_AreEqual()
         {
             string xml = @"<Parameters>
   <ParameterGroups>
@@ -35,9 +35,10 @@ namespace KaRecipes.BL.Recipes.Tests
   </ParameterGroups>
 </Parameters>
 ";
-            Recipe recipe = new();
-            var result = recipe.LoadXml(xml);
-            var expected = new List<ParameterModule>
+            RecipeSerializer recipeSerializer = new();
+            var result = recipeSerializer.Deserialize(xml);
+            var expected = new Recipe() {
+                ParameterModules = new List<ParameterModule>
             {
                 new ParameterModule()
                 {
@@ -80,26 +81,26 @@ namespace KaRecipes.BL.Recipes.Tests
                    Name="M15",
                    ParameterStations=new List<ParameterStation>()
                 }
+            }
             };
             CompareLogic compareLogic = new();
-            var comparison = compareLogic.Compare(expected, recipe.productionLineParameters);
-            Assert.Equal(2, result);
+            var comparison = compareLogic.Compare(expected, result);
             Assert.True(comparison.AreEqual);
         }
         [Fact()]
-        public void LoadXml_Empty_ReturnsZero()
+        public void Deserialize_Empty_IsEmpty()
         {
             string xml =
 @"<Parameters>
   <ParameterGroups>
   </ParameterGroups>
 </Parameters>";
-            Recipe recipe = new();
-            var result=recipe.LoadXml(xml);
-            Assert.Equal(0, result);
+            RecipeSerializer recipeSerializer = new();
+            var result=recipeSerializer.Deserialize(xml);
+            Assert.Empty(result.ParameterModules);
         }
         [Fact()]
-        public void GenerateXml_SampleData()
+        public void Serialize_SampleData()
         {
             List<ParameterStation> stations1 = new();
             ParameterSingle single11 = new() { Name = "single11", Value = "11" };
@@ -118,11 +119,12 @@ namespace KaRecipes.BL.Recipes.Tests
             stations2.Add(new() { Name = "singles2", ParameterSingles = singles2 });
 
             Recipe recipe = new();
-            recipe.productionLineParameters = new();
-            recipe.productionLineParameters.Add(new ParameterModule() { Name = "module1", ParameterStations= stations1 });
-            recipe.productionLineParameters.Add(new ParameterModule() { Name = "module2", ParameterStations = stations2 });
-            string actual = recipe.GenerateXml();
+            recipe.ParameterModules = new();
+            recipe.ParameterModules.Add(new ParameterModule() { Name = "module1", ParameterStations= stations1 });
+            recipe.ParameterModules.Add(new ParameterModule() { Name = "module2", ParameterStations = stations2 });
 
+            RecipeSerializer recipeSerializer = new();
+            string actual = recipeSerializer.Serialize(recipe);
             string expected = 
 @"<Parameters>
   <ParameterGroups>
@@ -142,5 +144,16 @@ namespace KaRecipes.BL.Recipes.Tests
 </Parameters>";
             Assert.Equal(expected, actual);
         }
+        [Fact()]
+        public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId() 
+        {
+            RecipeSerializer recipeSerializer = new();
+            Recipe recipe = new();
+            recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"C:\Users\MISO\Desktop\2up_12345.xp0");
+            Assert.Equal("2up", recipe.Name);
+            Assert.Equal(12345, recipe.VersionId);
+            recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"D:\Users\MISO\Desktop\2upz.xp0");
+        }
+
     }
 }

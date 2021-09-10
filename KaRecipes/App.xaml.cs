@@ -1,4 +1,5 @@
-﻿using KaRecipes.UI.Models;
+﻿using KaRecipes.BL.Serialize;
+using KaRecipes.UI.Models;
 using KaRecipes.UI.ViewModels;
 using KaRecipes.UI.Views;
 using Microsoft.Extensions.Configuration;
@@ -81,7 +82,7 @@ namespace KaRecipes
             services.AddSingleton<DiagnosticsTab>();
             services.AddSingleton<SettingsTab>();
             //Logic
-
+            services.AddTransient<IRecipeSerializer, RecipeSerializer>();
         }
 
 

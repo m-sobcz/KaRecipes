@@ -22,4 +22,8 @@
     <Folder Include="Properties\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\KaRecipes.BL\KaRecipes.BL.csproj" />
+  </ItemGroup>
+
 </Project>

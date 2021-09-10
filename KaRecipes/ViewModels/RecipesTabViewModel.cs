@@ -1,5 +1,8 @@
-﻿using System;
+﻿using KaRecipes.BL.RecipeAggregate;
+using KaRecipes.BL.Serialize;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,12 +14,15 @@ namespace KaRecipes.UI.ViewModels
     {
         public string OpenedFileName { get; set; }
         public string OpenedFileContent { get; set; }
+        public ObservableCollection<ParameterModule> parameterModules;
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate (string,string) OpenFileEventHandler(object sender);
-        public RecipesTabViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand) : base(getCommand)
+        IRecipeSerializer recipeSerializer;
+        public RecipesTabViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand,
+            IRecipeSerializer recipeSerializer) : base(getCommand)
         {
-
+            this.recipeSerializer = recipeSerializer;
         }
         public ICommand OpenFileCommand
         {
@@ -29,6 +35,8 @@ namespace KaRecipes.UI.ViewModels
                         {
                             var result =OpenFile?.Invoke(this);
                             (OpenedFileName, OpenedFileContent) = result.Value;
+                            Recipe recipe=recipeSerializer.Deserialize(OpenedFileContent);
+                            recipeSerializer.FillRecipeWithHeaderInfo(recipe, OpenedFileName);
                             OnPropertyChanged(nameof(OpenedFileName));
                         },
                         o => true
