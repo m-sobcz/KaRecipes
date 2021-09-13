@@ -6,15 +6,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.UI.Models.RecipeModel
+namespace KaRecipes.UI.Models
 {
-    class RecipeUI
+    public class RecipeUI
     {
-        public ObservableCollection<ParameterModule> parameterModules;
+        public ObservableCollection<ParameterModule> ParameterModules { get; set; }
 
         public RecipeUI(Recipe recipe)
         {
-            parameterModules = new(recipe.ParameterModules);
+            ParameterModules = new(recipe.ParameterModules);
         }
 
     }

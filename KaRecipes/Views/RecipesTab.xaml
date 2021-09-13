@@ -8,8 +8,11 @@
         xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:local="clr-namespace:KaRecipes.UI.Views"
         xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels"
+        xmlns:model="clr-namespace:KaRecipes.UI.Models"
+        xmlns:recipe="clr-namespace:KaRecipes.BL.RecipeAggregate;assembly=KaRecipes.BL"
         xmlns:convert="clr-namespace:KaRecipes.UI.Converters"
         xmlns:behavior="clr-namespace:KaRecipes.UI.Behaviors" 
+
              DataContext="{Binding Source={StaticResource Locator}, Path=RecipesTabViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -22,7 +25,23 @@
                      Height="100" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" >
         </TextBox>
         <Button Content="{StaticResource Open}" Height="50" Width="100" Command="{Binding OpenFileCommand}"  Margin="5"/>
+        <TreeView Name="Recipe" ItemsSource="{Binding ParameterModules}">
+            <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type recipe:ParameterModule}" ItemsSource="{Binding ParameterStations}">
+                    <TreeViewItem Header="{Binding Name}"></TreeViewItem>
+                </HierarchicalDataTemplate>
+                <HierarchicalDataTemplate DataType="{x:Type recipe:ParameterStation}" ItemsSource="{Binding ParameterSingles}">
+                    <TreeViewItem Header="{Binding Name}"></TreeViewItem>
+                </HierarchicalDataTemplate>
+                <DataTemplate DataType="{x:Type recipe:ParameterSingle}">
+                    <WrapPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                        <TextBox Text="{Binding Value, Mode=TwoWay}"></TextBox>
+                    </WrapPanel>
+                </DataTemplate>
+            </TreeView.Resources>
+        </TreeView>
     </WrapPanel>
 
-        
+
 </UserControl>

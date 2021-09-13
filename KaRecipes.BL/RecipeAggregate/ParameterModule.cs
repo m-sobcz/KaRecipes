@@ -8,7 +8,7 @@ namespace KaRecipes.BL.RecipeAggregate
 {
     public class ParameterModule
     {
-        public List<ParameterStation> ParameterStations = new();
+        public List<ParameterStation> ParameterStations { get; set; } = new();
         public string Name { get; set; }
     }
 }

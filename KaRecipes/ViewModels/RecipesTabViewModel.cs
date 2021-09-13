@@ -14,7 +14,7 @@ namespace KaRecipes.UI.ViewModels
     {
         public string OpenedFileName { get; set; }
         public string OpenedFileContent { get; set; }
-        public ObservableCollection<ParameterModule> parameterModules;
+        public ObservableCollection<ParameterModule> ParameterModules { get; set; } = new(new List<ParameterModule>() { new ParameterModule() { Name = "aas" } }); 
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate (string,string) OpenFileEventHandler(object sender);
@@ -36,6 +36,8 @@ namespace KaRecipes.UI.ViewModels
                             var result =OpenFile?.Invoke(this);
                             (OpenedFileName, OpenedFileContent) = result.Value;
                             Recipe recipe=recipeSerializer.Deserialize(OpenedFileContent);
+                            ParameterModules = new(recipe.ParameterModules);
+                            OnPropertyChanged(nameof(ParameterModules));
                             recipeSerializer.FillRecipeWithHeaderInfo(recipe, OpenedFileName);
                             OnPropertyChanged(nameof(OpenedFileName));
                         },

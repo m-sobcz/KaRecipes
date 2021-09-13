@@ -49,7 +49,6 @@ namespace KaRecipes
             if (openFileDialog.ShowDialog() == true)
             {
                 fileContent = File.ReadAllText(openFileDialog.FileName);
-                MessageBox.Show(fileContent);
                 var fullFileName = openFileDialog.FileName;
                 return (fullFileName, fileContent);
             }
