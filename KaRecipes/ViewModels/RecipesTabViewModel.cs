@@ -14,7 +14,7 @@ namespace KaRecipes.UI.ViewModels
     {
         public string OpenedFileName { get; set; }
         public string OpenedFileContent { get; set; }
-        public ObservableCollection<ParameterModule> ParameterModules { get; set; } = new(new List<ParameterModule>() { new ParameterModule() { Name = "aas" } }); 
+        public ObservableCollection<ParameterModule> ParameterModules { get; set; }
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate (string,string) OpenFileEventHandler(object sender);

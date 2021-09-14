@@ -19,13 +19,26 @@
         <!--Przyciski-->
         <sys:String x:Key="Open">_Otworz</sys:String>
     </UserControl.Resources>
-    <WrapPanel HorizontalAlignment="Center" Orientation="Vertical">
-        <TextBox Name="OpenedFileName" Text="{Binding OpenedFileName}"  
+    <DockPanel>
+        <DockPanel DockPanel.Dock="Top" >
+            <Button DockPanel.Dock="Top" Content="{StaticResource Open}" Height="50" Width="100" Command="{Binding OpenFileCommand}"  Margin="5"/>
+            <TextBox  Name="OpenedFileName" Text="{Binding OpenedFileName}" d:Text="C:\Data\Xp02.xd"  
                      Background="{DynamicResource {x:Static SystemColors.InfoColor}}" 
-                     Height="100" VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" >
-        </TextBox>
-        <Button Content="{StaticResource Open}" Height="50" Width="100" Command="{Binding OpenFileCommand}"  Margin="5"/>
+                     VerticalScrollBarVisibility="Auto" HorizontalAlignment="Stretch" Margin="5">
+            </TextBox>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Bottom">
+            <TextBlock>asdaqwd</TextBlock>
+        </DockPanel>
+        <DockPanel>
         <TreeView Name="Recipe" ItemsSource="{Binding ParameterModules}">
+            <d:TreeView.ItemsSource>
+                <x:Array Type="{x:Type recipe:ParameterModule}">
+                    <recipe:ParameterModule Name="M01"/>
+                    <recipe:ParameterModule Name="M02"/>
+                    <recipe:ParameterModule Name="M03"/>
+                </x:Array>
+            </d:TreeView.ItemsSource>
             <TreeView.Resources>
                 <HierarchicalDataTemplate DataType="{x:Type recipe:ParameterModule}" ItemsSource="{Binding ParameterStations}">
                     <TreeViewItem Header="{Binding Name}"></TreeViewItem>
@@ -41,7 +54,7 @@
                 </DataTemplate>
             </TreeView.Resources>
         </TreeView>
-    </WrapPanel>
-
+    </DockPanel>
+    </DockPanel>
 
 </UserControl>
