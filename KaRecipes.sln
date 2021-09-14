@@ -5,11 +5,15 @@ VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.UI", "KaRecipes\KaRecipes.UI.csproj", "{02A7D115-3724-499F-BAC0-53F5B3175345}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.UITests", "KaRecipes.UITests\KaRecipes.UITests.csproj", "{F9DD9C0A-1680-4F61-8BEA-0CF98F563787}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.UITests", "KaRecipes.UITests\KaRecipes.UITests.csproj", "{F9DD9C0A-1680-4F61-8BEA-0CF98F563787}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.BL", "KaRecipes.BL\KaRecipes.BL.csproj", "{7F7C340F-8D6F-42D6-83C7-16A27B488C90}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.BL", "KaRecipes.BL\KaRecipes.BL.csproj", "{7F7C340F-8D6F-42D6-83C7-16A27B488C90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.BLTests", "KaRecipes.BLTests\KaRecipes.BLTests.csproj", "{33AB6614-5046-4841-AE6E-0AF0D773420E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.BLTests", "KaRecipes.BLTests\KaRecipes.BLTests.csproj", "{33AB6614-5046-4841-AE6E-0AF0D773420E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.DA", "KaRecipes.DA\KaRecipes.DA.csproj", "{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "KaRecipes.DB", "KaRecipes.DB\KaRecipes.DB.sqlproj", "{B3028FC8-82A1-4329-99D0-4F120C6074D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,16 @@ Global
 		{33AB6614-5046-4841-AE6E-0AF0D773420E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{33AB6614-5046-4841-AE6E-0AF0D773420E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{33AB6614-5046-4841-AE6E-0AF0D773420E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
