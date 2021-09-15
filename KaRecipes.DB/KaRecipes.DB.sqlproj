@@ -56,6 +56,16 @@
   <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
   <ItemGroup>
     <Folder Include="Properties" />
-    <Folder Include="StoredProcedures" />
+    <Folder Include="dbo" />
+    <Folder Include="dbo\Tables" />
+    <Folder Include="dbo\StoredProcedures" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="dbo\Tables\Recipes.sql" />
+    <Build Include="dbo\StoredProcedures\Recipes_Get.sql" />
+    <Build Include="dbo\StoredProcedures\Recipes_GetAll.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="KaRecipes.DB.publish.xml" />
   </ItemGroup>
 </Project>

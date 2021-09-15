@@ -10,12 +10,13 @@ using System.Data.SqlClient;
 
 namespace KaRecipes.DA.DataAccess
 {
-    public class SqlDataAccess
+    public class SqlDataAccess : IDataAccess
     {
         readonly string connectionString;
-        public SqlDataAccess(string connectionString)
+        readonly string connectionName = "KaRecipesDB";
+        public SqlDataAccess(IConfiguration configuration)
         {
-            this.connectionString = connectionString;
+            this.connectionString = configuration.GetConnectionString(connectionName);
         }
         public List<T> Load<T>(string storedProcedureName, object parameter = null)
         {
@@ -36,9 +37,9 @@ namespace KaRecipes.DA.DataAccess
         public int Delete(string storedProcedureName, object parameter)
         {
             using var connection = GetDbConnection();
-            return connection.Execute(storedProcedureName, parameter, commandType: CommandType.StoredProcedure);          
+            return connection.Execute(storedProcedureName, parameter, commandType: CommandType.StoredProcedure);
         }
-        IDbConnection GetDbConnection() 
+        IDbConnection GetDbConnection()
         {
             return new SqlConnection(connectionString);
         }
