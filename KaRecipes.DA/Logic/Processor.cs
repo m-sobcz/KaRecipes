@@ -10,7 +10,7 @@ namespace CookBookBLL.Logic
     public class Processor
     {
         protected string defaultStoredProceduresPrefix;
-        protected string GetDefaultStoredProcedureName([CallerMemberName] string callerMemberName = "")
+        protected string GetDefaultsql([CallerMemberName] string callerMemberName = "")
         {
             return $"{defaultStoredProceduresPrefix}_{callerMemberName}";
         }

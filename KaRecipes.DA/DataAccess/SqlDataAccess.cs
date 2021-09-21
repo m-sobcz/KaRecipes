@@ -18,26 +18,21 @@ namespace KaRecipes.DA.DataAccess
         {
             this.connectionString = configuration.GetConnectionString(connectionName);
         }
-        public List<T> Load<T>(string storedProcedureName, object parameter = null)
+        public List<T> Load<T>(string sql, object parameter = null, CommandType commandType = CommandType.StoredProcedure)
         {
             using var connection = GetDbConnection();
-            return connection.Query<T>(storedProcedureName, parameter, commandType: CommandType.StoredProcedure).ToList();
+            return connection.Query<T>(sql, parameter, commandType: commandType).ToList();
         }
-        public List<Tout> Load<Tin1, Tin2, Tout>(string storedProcedureName, Func<Tin1, Tin2, Tout> mapping, object parameter, string splitOn)
-        {
-            using IDbConnection connection = GetDbConnection();
-            return connection.Query<Tin1, Tin2, Tout>(storedProcedureName, mapping, parameter, splitOn: splitOn).ToList();
-        }
-        public int? Save<T>(string StoredProcedureName, T data)
+        public int? Save<T>(string sql, T data, CommandType commandType = CommandType.StoredProcedure)
         {
             using var connection = GetDbConnection();
-            object result = connection.ExecuteScalar(StoredProcedureName, data, commandType: CommandType.StoredProcedure);
+            object result = connection.ExecuteScalar(sql, data, commandType: commandType);
             return (int.TryParse(result?.ToString(), out int intResult)) ? intResult : null;
         }
-        public int Delete(string storedProcedureName, object parameter)
+        public int Delete(string sql, object parameter, CommandType commandType = CommandType.StoredProcedure)
         {
             using var connection = GetDbConnection();
-            return connection.Execute(storedProcedureName, parameter, commandType: CommandType.StoredProcedure);
+            return connection.Execute(sql, parameter, commandType: commandType);
         }
         IDbConnection GetDbConnection()
         {

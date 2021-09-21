@@ -19,11 +19,11 @@ namespace CookBookBLL.Logic
         }
         public int? Create(RecipeDTO recipeModel)
         {
-            return dataAccess.Save(GetDefaultStoredProcedureName(), recipeModel);
+            return dataAccess.Save(GetDefaultsql(), recipeModel);
         }
         public int? Update(RecipeDTO recipeModel)
         {
-            return dataAccess.Save(GetDefaultStoredProcedureName(), recipeModel);
+            return dataAccess.Save(GetDefaultsql(), recipeModel);
         }
         public RecipeDTO Get(int id)
         {
@@ -31,11 +31,11 @@ namespace CookBookBLL.Logic
             {
                 Id = id
             };
-            return dataAccess.Load<Recipe>(GetDefaultStoredProcedureName(), parameter).FirstOrDefault();
+            return dataAccess.Load<Recipe>(GetDefaultsql(), parameter).FirstOrDefault();
         }
         public RecipeDTO GetAll()
         {
-            return dataAccess.Load<Recipe>(GetDefaultStoredProcedureName()).FirstOrDefault();
+            return dataAccess.Load<Recipe>(GetDefaultsql()).FirstOrDefault();
         }
         public int Delete(int id)
         {
@@ -43,7 +43,7 @@ namespace CookBookBLL.Logic
             {
                 Id = id
             };
-            return dataAccess.Delete(GetDefaultStoredProcedureName(), parameter);
+            return dataAccess.Delete(GetDefaultsql(), parameter);
         }
     }
 }

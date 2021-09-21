@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Data;
 
 namespace KaRecipes.DA.DataAccess
 {
     public interface IDataAccess
     {
-        int Delete(string storedProcedureName, object parameter);
-        List<T> Load<T>(string storedProcedureName, object parameter = null);
-        List<Tout> Load<Tin1, Tin2, Tout>(string storedProcedureName, Func<Tin1, Tin2, Tout> mapping, object parameter, string splitOn);
-        int? Save<T>(string StoredProcedureName, T data);
+        int Delete(string sql, object parameter, CommandType commandType = CommandType.StoredProcedure);
+        List<T> Load<T>(string sql, object parameter = null, CommandType commandType = CommandType.StoredProcedure);
+        int? Save<T>(string sql, T data, CommandType commandType = CommandType.StoredProcedure);
     }
 }
