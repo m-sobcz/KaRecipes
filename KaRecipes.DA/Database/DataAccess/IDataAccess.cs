@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 
-namespace KaRecipes.DA.DataAccess
+namespace KaRecipes.DA.Database.DataAccess
 {
     public interface IDataAccess
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.DA
+namespace KaRecipes.DA.Database.Models
 {
     public class RecipeDTO
     {

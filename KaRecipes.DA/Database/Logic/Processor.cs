@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace CookBookBLL.Logic
+namespace KaRecipes.DA.Database.Logic
 {
     public class Processor
     {

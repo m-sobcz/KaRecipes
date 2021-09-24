@@ -1,11 +1,11 @@
-﻿using KaRecipes.DA;
-using KaRecipes.DA.DataAccess;
+﻿using KaRecipes.DA.Database.DataAccess;
+using KaRecipes.DA.Database.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CookBookBLL.Logic
+namespace KaRecipes.DA.Database.Logic
 {
     public class RecipeProcessor : Processor
     {
@@ -31,11 +31,11 @@ namespace CookBookBLL.Logic
             {
                 Id = id
             };
-            return dataAccess.Load<Recipe>(GetDefaultsql(), parameter).FirstOrDefault();
+            return dataAccess.Load<RecipeDTO>(GetDefaultsql(), parameter).FirstOrDefault();
         }
         public RecipeDTO GetAll()
         {
-            return dataAccess.Load<Recipe>(GetDefaultsql()).FirstOrDefault();
+            return dataAccess.Load<RecipeDTO>(GetDefaultsql()).FirstOrDefault();
         }
         public int Delete(int id)
         {

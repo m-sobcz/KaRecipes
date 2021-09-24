@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System.Linq;
 using System.Data.SqlClient;
 
-namespace KaRecipes.DA.DataAccess
+namespace KaRecipes.DA.Database.DataAccess
 {
     public class SqlDataAccess : IDataAccess
     {
