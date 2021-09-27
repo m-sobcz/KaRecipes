@@ -15,8 +15,4 @@
     <ProjectReference Include="..\KaRecipes.BL\KaRecipes.BL.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="OPC\" />
-  </ItemGroup>
-
 </Project>

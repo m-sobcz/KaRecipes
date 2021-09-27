@@ -11,9 +11,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.BL", "KaRecipes.B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.BLTests", "KaRecipes.BLTests\KaRecipes.BLTests.csproj", "{33AB6614-5046-4841-AE6E-0AF0D773420E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.DA", "KaRecipes.DA\KaRecipes.DA.csproj", "{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KaRecipes.DA", "KaRecipes.DA\KaRecipes.DA.csproj", "{ADF9142F-C5F7-42CE-94B9-C46E1016AC79}"
 EndProject
 Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "KaRecipes.DB", "KaRecipes.DB\KaRecipes.DB.sqlproj", "{B3028FC8-82A1-4329-99D0-4F120C6074D6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KaRecipes.Integration", "KaRecipes.Integration\KaRecipes.Integration.csproj", "{A578F9A3-D1B0-47C4-A326-511F319521D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -47,6 +49,10 @@ Global
 		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B3028FC8-82A1-4329-99D0-4F120C6074D6}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A578F9A3-D1B0-47C4-A326-511F319521D7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A578F9A3-D1B0-47C4-A326-511F319521D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A578F9A3-D1B0-47C4-A326-511F319521D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A578F9A3-D1B0-47C4-A326-511F319521D7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
