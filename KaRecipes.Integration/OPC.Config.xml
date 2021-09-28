@@ -41,6 +41,11 @@
     <AutoAcceptUntrustedCertificates>false</AutoAcceptUntrustedCertificates>
 
   </SecurityConfiguration>
+  <ServerConfiguration>
+    <BaseAddresses>
+      <ua:String>opc.tcp://DESKTOP-EQ7QSF9:49320</ua:String>
+    </BaseAddresses>
+  </ServerConfiguration>
   <!-- This element is only required for Client and ClientServer applications -->
   <ClientConfiguration>
 
@@ -61,6 +66,5 @@
       and keep alive count are calculated using this value and the request publishing interval -->
     <MinSubscriptionLifetime>10000</MinSubscriptionLifetime>
   </ClientConfiguration>
-
 
 </ApplicationConfiguration>

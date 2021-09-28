@@ -17,11 +17,9 @@ namespace KaRecipes.DA.OPC
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
-        string endpointURL = "opc.tcp://DESKTOP-EQ7QSF9:49320";
-        int clientRunTime = Timeout.Infinite;
-
+        public List<string> NodeIdentifiers { get; set; } = new();
         public Client()
-        {
+        {  
             opcApplication = new ApplicationInstance
             {
                 ApplicationName = "KaRecipes OPC UA Client",
@@ -29,42 +27,60 @@ namespace KaRecipes.DA.OPC
                 ConfigSectionName ="OPC"
             };
         }
-        public async Task<int> Run() 
+        public async Task Start() 
+        {   
+            await CreateSession();
+            session.KeepAlive += Client_KeepAlive;
+            CreateSubscriptions();
+        }
+        public void Close() 
+        {
+            session.Close();
+        }
+
+        public async Task CreateSession() 
         {
             ApplicationConfiguration config = await opcApplication.LoadApplicationConfiguration(false);
             bool haveAppCertificate = await opcApplication.CheckApplicationInstanceCertificate(false, 0);
+            string endpointUrl = config.ServerConfiguration.BaseAddresses.First();
             config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointURL, haveAppCertificate, 15000);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-            session = await Session.Create(config, endpoint, false, "OPC UA Console Client", 60000, new UserIdentity(new AnonymousIdentityToken()), null);
-            session.KeepAlive += Client_KeepAlive;
-            Console.WriteLine(" DisplayName, BrowseName, NodeClass");
-            NodeId nodeId1 = new NodeId("Siemens.M01.OPC_UA_T.zmiena1", 2);
-            var uris = session.NamespaceUris;
+            session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+        }
+
+        void CreateSubscriptions() 
+        {
+            NodeId nodeId1 = new("Siemens.M01.OPC_UA_T.zmiena1", 2);
+
             var val1 = session.ReadValue(nodeId1);
-            Console.WriteLine(val1.WrappedValue.TypeInfo + " " + val1.WrappedValue.Value);
-            NodeId nodeId2 = new NodeId("Siemens.M01.OPC_UA_T.zmiena2", 2);
-            var val2 = session.ReadValue(nodeId2);
-            Console.WriteLine(val2.WrappedValue.TypeInfo + " " + val2.WrappedValue.Value);
-
-
-            Console.WriteLine("5 - Create a subscription with publishing interval of 1 second.");
+            Console.WriteLine(val1);
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };
-            var list = new List<MonitoredItem> {
-                new MonitoredItem(subscription.DefaultItem)
-                {
-                    DisplayName = "ServerStatusCurrentTime", StartNodeId = "i="+Variables.Server_ServerStatus_CurrentTime.ToString()
-                }
+            var list = new List<MonitoredItem>
+            {
+                new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
             };
+            list.AddRange(GetMonitoredItems());
             list.ForEach(i => i.Notification += OnNotification);
             subscription.AddItems(list);
             session.AddSubscription(subscription);
             subscription.Create();
-            return 1;
         }
-
+        List<MonitoredItem> GetMonitoredItems() 
+        {
+            List<MonitoredItem> monitoredItems = new();
+            var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };    
+            foreach (var item in NodeIdentifiers)
+            {
+                var nodeId = new NodeId(item,2);
+                monitoredItems.Add(
+                    new MonitoredItem(subscription.DefaultItem) { DisplayName = nodeId.Identifier.ToString(), StartNodeId = nodeId });
+            }
+            return monitoredItems;
+        }
+         
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
