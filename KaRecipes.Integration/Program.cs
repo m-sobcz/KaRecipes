@@ -8,9 +8,15 @@ namespace KaRecipes.Integration
     {
         static void Main(string[] args)
         {
-            Client client = new();
-            var x = client.Run();
-            Console.ReadKey();
+            multitasker().Wait();
+        }
+        static async Task multitasker() 
+        {
+            while (true) 
+            { 
+                Client client = new();
+                await client.Run();
+            }
         }
 
     }
