@@ -1,12 +1,13 @@
 ﻿using KaRecipes.DA.OPC;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KaRecipes.Integration
 {
     class Program
     {
-        static Client client = new();
+        static OpcClient client = new();
         static void Main(string[] args)
         {
 
@@ -16,17 +17,25 @@ namespace KaRecipes.Integration
         }
         static async Task Multitasker() 
         {
-            Console.CancelKeyPress += (sender, args) => client.Close();
-            client.NodeIdentifiers.Add("Siemens.M01.OPC_UA_T.zmiena1");
-            client.NodeIdentifiers.Add("Siemens.M01.OPC_UA_T.zmiena2");
-            Console.WriteLine("Client starting....");
-            await client.Start();    
-            Console.WriteLine("Client started! Waiting...");
-            await Task.Delay(3000);
-            Console.WriteLine("Client closing...");
-            client.Close();
-            Console.WriteLine("Client closed! Waiting... ");
-            await Task.Delay(300);
+            using OpcClient client = new();
+            //Console.CancelKeyPress += (sender, args) => client.Close();
+            Console.WriteLine("Create client...");
+            await client.Create();
+            Console.WriteLine("Read val...");
+            var readVal = client.ReadNode("KaRecipes.M01.OPC_UA_T.zmiena1");
+            Console.WriteLine(readVal);
+            readVal = client.ReadNode("KaRecipes.M01.OPC_UA_T.zmiena2");
+            Console.WriteLine(readVal);
+            Console.WriteLine("Create subscriptions...");
+            List<string> subscriptions = new()
+            {
+                "KaRecipes.M01.OPC_UA_T.zmiena1",
+                "KaRecipes.M01.OPC_UA_T.zmiena2"
+            };
+            client.CreateSubscriptions(subscriptions);
+            Console.WriteLine("Press any key to end...");
+            Console.ReadKey();
+            Console.WriteLine("Closing client... ");
         }
 
 

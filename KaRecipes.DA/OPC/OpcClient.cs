@@ -11,14 +11,15 @@ using Opc.Ua.Configuration;
 
 namespace KaRecipes.DA.OPC
 {
-    public class Client
+    public class OpcClient : IDisposable
     {
-        ApplicationInstance opcApplication;
+        bool disposed = false;
+        readonly ApplicationInstance opcApplication;
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
-        public List<string> NodeIdentifiers { get; set; } = new();
-        public Client()
+        public List<MonitoredItem> MonitoredItems { get; private set; }
+        public OpcClient()
         {  
             opcApplication = new ApplicationInstance
             {
@@ -27,18 +28,8 @@ namespace KaRecipes.DA.OPC
                 ConfigSectionName ="OPC"
             };
         }
-        public async Task Start() 
-        {   
-            await CreateSession();
-            session.KeepAlive += Client_KeepAlive;
-            CreateSubscriptions();
-        }
-        public void Close() 
-        {
-            session.Close();
-        }
 
-        public async Task CreateSession() 
+        public async Task Create() 
         {
             ApplicationConfiguration config = await opcApplication.LoadApplicationConfiguration(false);
             bool haveAppCertificate = await opcApplication.CheckApplicationInstanceCertificate(false, 0);
@@ -49,36 +40,31 @@ namespace KaRecipes.DA.OPC
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
             session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+            session.KeepAlive += Client_KeepAlive;
+        }
+        public object ReadNode(string nodeIdentifier) 
+        {
+            NodeId nodeId1 = new(nodeIdentifier, 2);
+            var val1 = session.ReadValue(nodeId1);
+            return val1.Value;
         }
 
-        void CreateSubscriptions() 
+        public void CreateSubscriptions(List<string> monitoredNodeIdentifiers) 
         {
-            NodeId nodeId1 = new("Siemens.M01.OPC_UA_T.zmiena1", 2);
-
-            var val1 = session.ReadValue(nodeId1);
-            Console.WriteLine(val1);
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };
-            var list = new List<MonitoredItem>
+            MonitoredItems = new List<MonitoredItem>
             {
                 new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
             };
-            list.AddRange(GetMonitoredItems());
-            list.ForEach(i => i.Notification += OnNotification);
-            subscription.AddItems(list);
-            session.AddSubscription(subscription);
-            subscription.Create();
-        }
-        List<MonitoredItem> GetMonitoredItems() 
-        {
-            List<MonitoredItem> monitoredItems = new();
-            var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };    
-            foreach (var item in NodeIdentifiers)
+            foreach (var item in monitoredNodeIdentifiers)
             {
-                var nodeId = new NodeId(item,2);
-                monitoredItems.Add(
+                var nodeId = new NodeId(item, 2);
+                MonitoredItems.Add(
                     new MonitoredItem(subscription.DefaultItem) { DisplayName = nodeId.Identifier.ToString(), StartNodeId = nodeId });
             }
-            return monitoredItems;
+            MonitoredItems.ForEach(i => i.Notification += OnNotification);
+            session.AddSubscription(subscription);
+            subscription.Create();
         }
          
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
@@ -115,7 +101,7 @@ namespace KaRecipes.DA.OPC
         {
             foreach (var value in item.DequeueValues())
             {
-                Console.WriteLine("{0}: {1}, {2}, {3}", item.DisplayName, value.Value, value.SourceTimestamp, value.StatusCode);
+                Console.WriteLine("{0}: <{1}> {1}, {2}, {3}", item.DisplayName,value.WrappedValue.TypeInfo, value.Value, value.SourceTimestamp, value.StatusCode);
             }
         }
 
@@ -127,6 +113,21 @@ namespace KaRecipes.DA.OPC
             }
         }
 
-
+        protected void Dispose(bool disposing) 
+        {
+            if (!disposed) 
+            {
+                if (disposing) 
+                {
+                    session?.Dispose();
+                }
+                disposed = true;  
+            }
+        }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }
