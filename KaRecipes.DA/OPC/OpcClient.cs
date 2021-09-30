@@ -63,10 +63,11 @@ namespace KaRecipes.DA.OPC
                     new MonitoredItem(subscription.DefaultItem) { DisplayName = nodeId.Identifier.ToString(), StartNodeId = nodeId });
             }
             MonitoredItems.ForEach(i => i.Notification += OnNotification);
+            subscription.AddItems(MonitoredItems);
             session.AddSubscription(subscription);
             subscription.Create();
         }
-         
+
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
@@ -101,7 +102,7 @@ namespace KaRecipes.DA.OPC
         {
             foreach (var value in item.DequeueValues())
             {
-                Console.WriteLine("{0}: <{1}> {1}, {2}, {3}", item.DisplayName,value.WrappedValue.TypeInfo, value.Value, value.SourceTimestamp, value.StatusCode);
+                Console.WriteLine("{0}: <{1}> {2}, {3}", item.DisplayName,value.WrappedValue.TypeInfo, value.Value, value.SourceTimestamp, value.StatusCode);
             }
         }
 
