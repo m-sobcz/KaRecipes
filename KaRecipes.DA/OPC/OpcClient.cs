@@ -14,6 +14,7 @@ namespace KaRecipes.DA.OPC
     public class OpcClient : IDisposable
     {
         bool disposed = false;
+        readonly ushort namespaceIndex = 2;
         readonly ApplicationInstance opcApplication;
         const int ReconnectPeriod = 10;
         Session session;
@@ -69,7 +70,38 @@ namespace KaRecipes.DA.OPC
             subscription.Create();
         }
 
+        public void WriteToNode(string nodeIdentifier, object value) 
+        {
+            WriteValue valueToWrite = new WriteValue();
 
+            valueToWrite.NodeId = new NodeId(nodeIdentifier, namespaceIndex);
+            valueToWrite.AttributeId = Attributes.Value;
+            valueToWrite.Value.Value = value;
+            valueToWrite.Value.StatusCode = StatusCodes.Good;
+            valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
+            valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
+
+            WriteValueCollection valuesToWrite = new WriteValueCollection();
+            valuesToWrite.Add(valueToWrite);
+
+            // write current value.
+            StatusCodeCollection results = null;
+            DiagnosticInfoCollection diagnosticInfos = null;
+
+            session.Write(
+                null,
+                valuesToWrite,
+                out results,
+                out diagnosticInfos);
+
+            ClientBase.ValidateResponse(results, valuesToWrite);
+            ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
+
+            if (StatusCode.IsBad(results[0]))
+            {
+                throw new ServiceResultException(results[0]);
+            }
+        }
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
@@ -107,7 +139,7 @@ namespace KaRecipes.DA.OPC
                 OpcDataReceivedEventArgs args = new()
                 {
                     Name = item.DisplayName,
-                    Value = value.WrappedValue
+                    Value = DataValueToNetType(value)
                 };
                 OnOpcDataReceived(args);
             }   

@@ -34,6 +34,8 @@ namespace KaRecipes.Integration
             };
             client.CreateSubscriptions(subscriptions);
             client.opcDataReceived += Client_opcDataReceived;
+            await Task.Delay(1000);
+            client.WriteToNode("KaRecipes.M01.OPC_UA_T.zmiena1", (short)2);
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();
             Console.WriteLine("Closing client... ");
@@ -41,7 +43,7 @@ namespace KaRecipes.Integration
 
         private static void Client_opcDataReceived(object sender, OpcDataReceivedEventArgs e)
         {
-            Console.WriteLine(e.Name + ":   " + e.Value);
+            Console.WriteLine(e.Name + ":   " + e.Value +"<" +e.Value.GetType()+">");
         }
     }
 }
