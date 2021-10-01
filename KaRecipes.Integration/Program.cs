@@ -33,11 +33,15 @@ namespace KaRecipes.Integration
                 "KaRecipes.M01.OPC_UA_T.zmiena2"
             };
             client.CreateSubscriptions(subscriptions);
+            client.opcDataReceived += Client_opcDataReceived;
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();
             Console.WriteLine("Closing client... ");
         }
 
-
+        private static void Client_opcDataReceived(object sender, OpcDataReceivedEventArgs e)
+        {
+            Console.WriteLine(e.Name + ":   " + e.Value);
+        }
     }
 }

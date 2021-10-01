@@ -18,18 +18,18 @@ namespace KaRecipes.DA.OPC
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
-        public List<MonitoredItem> MonitoredItems { get; private set; }
+        public event EventHandler<OpcDataReceivedEventArgs> opcDataReceived;
         public OpcClient()
-        {  
+        {
             opcApplication = new ApplicationInstance
             {
                 ApplicationName = "KaRecipes OPC UA Client",
                 ApplicationType = ApplicationType.Client,
-                ConfigSectionName ="OPC"
+                ConfigSectionName = "OPC"
             };
         }
 
-        public async Task Create() 
+        public async Task Create()
         {
             ApplicationConfiguration config = await opcApplication.LoadApplicationConfiguration(false);
             bool haveAppCertificate = await opcApplication.CheckApplicationInstanceCertificate(false, 0);
@@ -42,17 +42,18 @@ namespace KaRecipes.DA.OPC
             session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
             session.KeepAlive += Client_KeepAlive;
         }
-        public object ReadNode(string nodeIdentifier) 
+        public object ReadNode(string nodeIdentifier)
         {
             NodeId nodeId1 = new(nodeIdentifier, 2);
-            var val1 = session.ReadValue(nodeId1);
-            return val1.Value;
+            var readVal = session.ReadValue(nodeId1);
+            var convertedVal = DataValueToNetType(readVal);
+            return convertedVal;
         }
 
-        public void CreateSubscriptions(List<string> monitoredNodeIdentifiers) 
+        public void CreateSubscriptions(List<string> monitoredNodeIdentifiers)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };
-            MonitoredItems = new List<MonitoredItem>
+            var MonitoredItems = new List<MonitoredItem>
             {
                 new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
             };
@@ -67,6 +68,7 @@ namespace KaRecipes.DA.OPC
             session.AddSubscription(subscription);
             subscription.Create();
         }
+
 
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
@@ -98,14 +100,22 @@ namespace KaRecipes.DA.OPC
             Console.WriteLine("--- RECONNECTED ---");
         }
 
-        private static void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
+        private void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
         {
             foreach (var value in item.DequeueValues())
             {
-                Console.WriteLine("{0}: <{1}> {2}, {3}", item.DisplayName,value.WrappedValue.TypeInfo, value.Value, value.SourceTimestamp, value.StatusCode);
-            }
+                OpcDataReceivedEventArgs args = new()
+                {
+                    Name = item.DisplayName,
+                    Value = value.WrappedValue
+                };
+                OnOpcDataReceived(args);
+            }   
         }
-
+        void OnOpcDataReceived(OpcDataReceivedEventArgs args) 
+        {
+            opcDataReceived?.Invoke(this,args);
+        }
         private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
@@ -114,21 +124,101 @@ namespace KaRecipes.DA.OPC
             }
         }
 
-        protected void Dispose(bool disposing) 
+        protected void Dispose(bool disposing)
         {
-            if (!disposed) 
+            if (!disposed)
             {
-                if (disposing) 
+                if (disposing)
                 {
                     session?.Dispose();
                 }
-                disposed = true;  
+                disposed = true;
             }
         }
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+        private object DataValueToNetType(DataValue input)
+        {
+            object converted;
+            switch (input?.WrappedValue.TypeInfo.BuiltInType)
+            {
+                case BuiltInType.Boolean:
+                    {
+                        converted = Convert.ToBoolean(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.SByte:
+                    {
+                        converted = Convert.ToSByte(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Byte:
+                    {
+                        converted = Convert.ToByte(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Int16:
+                    {
+                        converted = Convert.ToInt16(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.UInt16:
+                    {
+                        converted = Convert.ToUInt16(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Int32:
+                    {
+                        converted = Convert.ToInt32(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.UInt32:
+                    {
+                        converted = Convert.ToUInt32(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Int64:
+                    {
+                        converted = Convert.ToInt64(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.UInt64:
+                    {
+                        converted = Convert.ToUInt64(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Float:
+                    {
+                        converted = Convert.ToSingle(input.Value);
+                        break;
+                    }
+
+                case BuiltInType.Double:
+                    {
+                        converted = Convert.ToDouble(input.Value);
+                        break;
+                    }
+
+                default:
+                    {
+                        converted = input.Value;
+                        break;
+                    }
+            }
+
+            return converted;
         }
     }
 }
