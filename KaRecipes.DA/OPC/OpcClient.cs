@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using KaRecipes.BL.Interfaces;
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
 
 namespace KaRecipes.DA.OPC
 {
-    public class OpcClient : IDisposable
+    public class OpcClient : IDisposable, IPlcDataAccess
     {
         bool disposed = false;
         readonly ushort namespaceIndex = 2;
@@ -19,7 +19,7 @@ namespace KaRecipes.DA.OPC
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
-        public event EventHandler<OpcDataReceivedEventArgs> opcDataReceived;
+        public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
         public OpcClient()
         {
             opcApplication = new ApplicationInstance
@@ -30,7 +30,7 @@ namespace KaRecipes.DA.OPC
             };
         }
 
-        public async Task Create()
+        public async Task Start()
         {
             ApplicationConfiguration config = await opcApplication.LoadApplicationConfiguration(false);
             bool haveAppCertificate = await opcApplication.CheckApplicationInstanceCertificate(false, 0);
@@ -70,7 +70,7 @@ namespace KaRecipes.DA.OPC
             subscription.Create();
         }
 
-        public void WriteToNode(string nodeIdentifier, object value) 
+        public void WriteToNode(string nodeIdentifier, object value)
         {
             WriteValue valueToWrite = new WriteValue();
 
@@ -136,17 +136,17 @@ namespace KaRecipes.DA.OPC
         {
             foreach (var value in item.DequeueValues())
             {
-                OpcDataReceivedEventArgs args = new()
+                PlcDataReceivedEventArgs args = new()
                 {
                     Name = item.DisplayName,
                     Value = DataValueToNetType(value)
                 };
                 OnOpcDataReceived(args);
-            }   
+            }
         }
-        void OnOpcDataReceived(OpcDataReceivedEventArgs args) 
+        void OnOpcDataReceived(PlcDataReceivedEventArgs args)
         {
-            opcDataReceived?.Invoke(this,args);
+            OpcDataReceived?.Invoke(this, args);
         }
         private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
         {

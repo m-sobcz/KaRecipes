@@ -10,7 +10,7 @@ using System.Data.SqlClient;
 
 namespace KaRecipes.DA.Database.DataAccess
 {
-    public class SqlDataAccess : IDataAccess
+    public class SqlDataAccess : IDbDataAccess
     {
         readonly string connectionString;
         readonly string connectionName = "KaRecipesDB";

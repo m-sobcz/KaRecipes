@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.DA.OPC
+namespace KaRecipes.BL.Interfaces
 {
-    public class OpcDataReceivedEventArgs : EventArgs
+    public class PlcDataReceivedEventArgs : EventArgs
     {
         public string Name { get; set; }
         public object Value { get; set; }
