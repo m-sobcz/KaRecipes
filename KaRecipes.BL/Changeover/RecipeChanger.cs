@@ -1,4 +1,5 @@
 ﻿using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.RecipeAggregate;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,14 @@ namespace KaRecipes.BL.Changeover
 {
     public class RecipeChanger
     {
-        public RecipeChanger(IPlcDataAccess opcDataAccess)
+        readonly string plcAccessPrefix = "KaRecipes.";
+        IPlcDataAccess plcDataAccess;
+        Recipe RecipeTemplate { get; set; }
+        public RecipeChanger(IPlcDataAccess plcDataAccess)
         {
-
+            this.plcDataAccess = plcDataAccess;
         }
+        
+
     }
 }

@@ -43,15 +43,15 @@ namespace KaRecipes.DA.OPC
             session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
             session.KeepAlive += Client_KeepAlive;
         }
-        public object ReadNode(string nodeIdentifier)
+        public async Task<object> ReadNode(string nodeIdentifier)
         {
             NodeId nodeId1 = new(nodeIdentifier, 2);
-            var readVal = session.ReadValue(nodeId1);
+            var readVal= await Task.Run(() => session.ReadValue(nodeId1));
             var convertedVal = DataValueToNetType(readVal);
             return convertedVal;
         }
 
-        public void CreateSubscriptions(List<string> monitoredNodeIdentifiers)
+        public async Task CreateSubscriptions(List<string> monitoredNodeIdentifiers)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };
             var MonitoredItems = new List<MonitoredItem>
@@ -66,13 +66,13 @@ namespace KaRecipes.DA.OPC
             }
             MonitoredItems.ForEach(i => i.Notification += OnNotification);
             subscription.AddItems(MonitoredItems);
-            session.AddSubscription(subscription);
+            await Task.Run(() => session.AddSubscription(subscription));
             subscription.Create();
         }
 
-        public void WriteToNode(string nodeIdentifier, object value)
+        public async Task WriteToNode(string nodeIdentifier, object value)
         {
-            WriteValue valueToWrite = new WriteValue();
+            WriteValue valueToWrite = new();
 
             valueToWrite.NodeId = new NodeId(nodeIdentifier, namespaceIndex);
             valueToWrite.AttributeId = Attributes.Value;
@@ -87,12 +87,12 @@ namespace KaRecipes.DA.OPC
             // write current value.
             StatusCodeCollection results = null;
             DiagnosticInfoCollection diagnosticInfos = null;
-
-            session.Write(
+            await Task.Run(() => session.Write(
                 null,
                 valuesToWrite,
                 out results,
-                out diagnosticInfos);
+                out diagnosticInfos));
+            
 
             ClientBase.ValidateResponse(results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);

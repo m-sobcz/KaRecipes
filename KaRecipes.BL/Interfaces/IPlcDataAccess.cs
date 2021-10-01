@@ -8,10 +8,11 @@ namespace KaRecipes.BL.Interfaces
     {
         event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
 
-        void CreateSubscriptions(List<string> monitoredNodeIdentifiers);
-        void Dispose();
-        object ReadNode(string nodeIdentifier);
+        Task CreateSubscriptions(List<string> monitoredNodeIdentifiers);
+        
+        Task<object> ReadNode(string nodeIdentifier);
         Task Start();
-        void WriteToNode(string nodeIdentifier, object value);
+        Task WriteToNode(string nodeIdentifier, object value);
+        void Dispose();
     }
 }
