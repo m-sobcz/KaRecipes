@@ -23,19 +23,19 @@ namespace KaRecipes.Integration
             Console.WriteLine("Create client...");
             await client.Start();
             Console.WriteLine("Read val...");
-            var readVal = await client.ReadNode("KaRecipes.M01.OPC_UA_T.zmiena1");
-            Console.WriteLine(readVal);
-            readVal = await client.ReadNode("KaRecipes.M01.OPC_UA_T.zmiena2");
-            Console.WriteLine(readVal);
+            var readVal = await client.ReadParameter("KaRecipes.M01.OPC_UA_T.zmiena1");
+            Console.WriteLine(readVal.Value);
+            readVal = await client.ReadParameter("KaRecipes.M01.OPC_UA_T.zmiena2");
+            Console.WriteLine(readVal.Value);
             Console.WriteLine("Create subscriptions...");
             List<string> subscriptions = new()
             {
                 "KaRecipes.M01.OPC_UA_T.zmiena1",
                 "KaRecipes.M01.OPC_UA_T.zmiena2"
             };
-            await client.CreateSubscriptions(subscriptions);
+            await client.CreateSubscriptionsWithInterval(subscriptions,1000);
             client.OpcDataReceived += Client_opcDataReceived;
-            await client.WriteToNode("KaRecipes.M01.OPC_UA_T.zmiena1", (short)2);
+            bool res=await client.WriteParameter("KaRecipes.M01.OPC_UA_T.zmiena1", (short)2);
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();
             Console.WriteLine("Closing client... ");

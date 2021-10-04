@@ -9,6 +9,6 @@ namespace KaRecipes.BL.RecipeAggregate
     public class ParameterSingle
     {
         public string Name { get; set; }
-        public string Value { get; set; }
+        public object Value { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KaRecipes.BL.RecipeAggregate;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,11 +9,11 @@ namespace KaRecipes.BL.Interfaces
     {
         event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
 
-        Task CreateSubscriptions(List<string> monitoredNodeIdentifiers);
+        Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval);
         
-        Task<object> ReadNode(string nodeIdentifier);
+        Task<ParameterSingle> ReadParameter(string nodeIdentifier);
         Task Start();
-        Task WriteToNode(string nodeIdentifier, object value);
+        Task<bool> WriteParameter(string nodeIdentifier, object value);
         void Dispose();
     }
 }

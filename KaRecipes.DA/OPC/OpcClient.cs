@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.RecipeAggregate;
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
@@ -20,6 +22,7 @@ namespace KaRecipes.DA.OPC
         Session session;
         SessionReconnectHandler reconnectHandler;
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
+        Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)",RegexOptions.Compiled);
         public OpcClient()
         {
             opcApplication = new ApplicationInstance
@@ -43,17 +46,20 @@ namespace KaRecipes.DA.OPC
             session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
             session.KeepAlive += Client_KeepAlive;
         }
-        public async Task<object> ReadNode(string nodeIdentifier)
+        public async Task<ParameterSingle> ReadParameter(string nodeIdentifier)
         {
             NodeId nodeId1 = new(nodeIdentifier, 2);
             var readVal= await Task.Run(() => session.ReadValue(nodeId1));
             var convertedVal = DataValueToNetType(readVal);
-            return convertedVal;
+            var match = nodeNameRegex.Match(nodeIdentifier);
+            var name = match.Value;
+             var param = new ParameterSingle() { Name = name, Value = convertedVal};
+            return param;
         }
 
-        public async Task CreateSubscriptions(List<string> monitoredNodeIdentifiers)
+        public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval)
         {
-            var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = 1000 };
+            var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
             var MonitoredItems = new List<MonitoredItem>
             {
                 new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
@@ -70,10 +76,9 @@ namespace KaRecipes.DA.OPC
             subscription.Create();
         }
 
-        public async Task WriteToNode(string nodeIdentifier, object value)
+        public async Task<bool> WriteParameter(string nodeIdentifier, object value)
         {
             WriteValue valueToWrite = new();
-
             valueToWrite.NodeId = new NodeId(nodeIdentifier, namespaceIndex);
             valueToWrite.AttributeId = Attributes.Value;
             valueToWrite.Value.Value = value;
@@ -92,22 +97,15 @@ namespace KaRecipes.DA.OPC
                 valuesToWrite,
                 out results,
                 out diagnosticInfos));
-            
-
             ClientBase.ValidateResponse(results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
-
-            if (StatusCode.IsBad(results[0]))
-            {
-                throw new ServiceResultException(results[0]);
-            }
+            return StatusCode.IsGood(results[0]);
         }
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
             {
                 Console.WriteLine("{0} {1}/{2}", e.Status, sender.OutstandingRequestCount, sender.DefunctRequestCount);
-
                 if (reconnectHandler == null)
                 {
                     Console.WriteLine("--- RECONNECTING ---");
@@ -124,11 +122,9 @@ namespace KaRecipes.DA.OPC
             {
                 return;
             }
-
             session = reconnectHandler.Session;
             reconnectHandler.Dispose();
             reconnectHandler = null;
-
             Console.WriteLine("--- RECONNECTED ---");
         }
 
