@@ -21,9 +21,13 @@ namespace KaRecipes.DA.OPC
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
-        public readonly string nodeIdPrefix = "KaRecipes";
+        readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
-        Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
+
+        readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
+
+        public string PlcAccessPrefix => nodeIdPrefix;
+
         public OpcClient()
         {
             opcApplication = new ApplicationInstance
@@ -55,18 +59,21 @@ namespace KaRecipes.DA.OPC
             var name = ExtractNameFromIdentifier(nodeIdentifier);
             return new ParameterSingle() { Name = name, Value = convertedVal }; ;
         }
+
         string ExtractNameFromIdentifier(string nodeIdentifier)
         {
             var match = nodeNameRegex.Match(nodeIdentifier);
             var name = match.Value;
             return name;
         }
+
         async Task<DataValue> ReadNode(string nodeIdentifier)
         {
             NodeId nodeId1 = new(nodeIdentifier, 2);
             var readVal = await Task.Run(() => session.ReadValue(nodeId1));
             return readVal;
         }
+
         public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
@@ -111,9 +118,10 @@ namespace KaRecipes.DA.OPC
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
             return StatusCode.IsGood(results[0]);
         }
-        public async Task<Dictionary<string, Type>> GetAvailableNodeTypes()
+
+        public Dictionary<string, string> GetAvailableNodes()
         {
-            Dictionary<string, Type> nodes = new();
+            Dictionary<string, string> nodes = new();
             session.Browse(
                 null,
                 null,
@@ -159,10 +167,7 @@ namespace KaRecipes.DA.OPC
                         {
                             if (parameterRef.DisplayName.ToString().StartsWith("_") == false)
                             {
-                                string nodeId = parameterRef.NodeId.Identifier.ToString();
-                                var dataValue = await ReadNode(nodeId);
-                                var convertedVal = DataValueToNetType(dataValue);
-                                nodes.Add(parameterRef.NodeId.Identifier.ToString(), convertedVal?.GetType());
+                                nodes.Add(parameterRef.NodeId.Identifier.ToString(), parameterRef.DisplayName.ToString());
                             }
                         }
                     }
@@ -171,6 +176,7 @@ namespace KaRecipes.DA.OPC
             }
             return nodes;
         }
+
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
             if (e.Status != null && ServiceResult.IsNotGood(e.Status))
@@ -210,10 +216,12 @@ namespace KaRecipes.DA.OPC
                 OnOpcDataReceived(args);
             }
         }
+
         void OnOpcDataReceived(PlcDataReceivedEventArgs args)
         {
             OpcDataReceived?.Invoke(this, args);
         }
+
         private static void CertificateValidator_CertificateValidation(CertificateValidator validator, CertificateValidationEventArgs e)
         {
             if (e.Error.StatusCode == StatusCodes.BadCertificateUntrusted)
@@ -233,12 +241,14 @@ namespace KaRecipes.DA.OPC
                 disposed = true;
             }
         }
+
         public void Dispose()
         { 
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-        private object DataValueToNetType(DataValue input)
+
+        private static object DataValueToNetType(DataValue input)
         {
             object converted;
             if (input?.WrappedValue.TypeInfo.ValueRank != -1) return null;//ignore arrays
