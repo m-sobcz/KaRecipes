@@ -21,8 +21,9 @@ namespace KaRecipes.DA.OPC
         const int ReconnectPeriod = 10;
         Session session;
         SessionReconnectHandler reconnectHandler;
+        public readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
-        Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)",RegexOptions.Compiled);
+        Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
         public OpcClient()
         {
             opcApplication = new ApplicationInstance
@@ -46,17 +47,26 @@ namespace KaRecipes.DA.OPC
             session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
             session.KeepAlive += Client_KeepAlive;
         }
+
         public async Task<ParameterSingle> ReadParameter(string nodeIdentifier)
         {
-            NodeId nodeId1 = new(nodeIdentifier, 2);
-            var readVal= await Task.Run(() => session.ReadValue(nodeId1));
+            var readVal = await ReadNode(nodeIdentifier);
             var convertedVal = DataValueToNetType(readVal);
+            var name = ExtractNameFromIdentifier(nodeIdentifier);
+            return new ParameterSingle() { Name = name, Value = convertedVal }; ;
+        }
+        string ExtractNameFromIdentifier(string nodeIdentifier)
+        {
             var match = nodeNameRegex.Match(nodeIdentifier);
             var name = match.Value;
-             var param = new ParameterSingle() { Name = name, Value = convertedVal};
-            return param;
+            return name;
         }
-
+        async Task<DataValue> ReadNode(string nodeIdentifier)
+        {
+            NodeId nodeId1 = new(nodeIdentifier, 2);
+            var readVal = await Task.Run(() => session.ReadValue(nodeId1));
+            return readVal;
+        }
         public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
@@ -100,6 +110,66 @@ namespace KaRecipes.DA.OPC
             ClientBase.ValidateResponse(results, valuesToWrite);
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
             return StatusCode.IsGood(results[0]);
+        }
+        public async Task<Dictionary<string, Type>> GetAvailableNodeTypes()
+        {
+            Dictionary<string, Type> nodes = new();
+            session.Browse(
+                null,
+                null,
+                new NodeId(nodeIdPrefix, namespaceIndex),
+                0u,
+                BrowseDirection.Forward,
+                ReferenceTypeIds.HierarchicalReferences,
+                true,
+                (uint)NodeClass.Object,
+                out _,
+                out ReferenceDescriptionCollection moduleRefs);
+            foreach (var moduleRef in moduleRefs)
+            {
+                session.Browse(
+                    null,
+                    null,
+                    ExpandedNodeId.ToNodeId(moduleRef.NodeId, session.NamespaceUris),
+                    0u,
+                    BrowseDirection.Forward,
+                    ReferenceTypeIds.HierarchicalReferences,
+                    true,
+                    (uint)NodeClass.Variable | (uint)NodeClass.Object | (uint)NodeClass.Method,
+                    out byte[] nextCp,
+                    out ReferenceDescriptionCollection stationRefs);
+
+                foreach (var stationRef in stationRefs)
+                {
+                    if (stationRef.DisplayName.ToString().StartsWith("_") == false)
+                    {
+                        session.Browse(
+                        null,
+                        null,
+                        ExpandedNodeId.ToNodeId(stationRef.NodeId, session.NamespaceUris),
+                        0u,
+                        BrowseDirection.Forward,
+                        ReferenceTypeIds.HierarchicalReferences,
+                        true,
+                        (uint)NodeClass.Variable,
+                        out byte[] next2Cp,
+                        out ReferenceDescriptionCollection parameterRefs);
+
+                        foreach (var parameterRef in parameterRefs)
+                        {
+                            if (parameterRef.DisplayName.ToString().StartsWith("_") == false)
+                            {
+                                string nodeId = parameterRef.NodeId.Identifier.ToString();
+                                var dataValue = await ReadNode(nodeId);
+                                var convertedVal = DataValueToNetType(dataValue);
+                                nodes.Add(parameterRef.NodeId.Identifier.ToString(), convertedVal?.GetType());
+                            }
+                        }
+                    }
+                }
+
+            }
+            return nodes;
         }
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)
         {
@@ -164,13 +234,14 @@ namespace KaRecipes.DA.OPC
             }
         }
         public void Dispose()
-        {
+        { 
             Dispose(true);
             GC.SuppressFinalize(this);
         }
         private object DataValueToNetType(DataValue input)
         {
             object converted;
+            if (input?.WrappedValue.TypeInfo.ValueRank != -1) return null;//ignore arrays
             switch (input?.WrappedValue.TypeInfo.BuiltInType)
             {
                 case BuiltInType.Boolean:

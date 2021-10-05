@@ -12,7 +12,7 @@ namespace KaRecipes.BL.Changeover
 {
     public class RecipeChanger
     {
-        public Recipe ActualRecipe { get; set; }
+        Recipe ActualRecipe { get; set; }
         readonly string plcAccessPrefix = "KaRecipes";
         readonly IPlcDataAccess plcDataAccess;  
         readonly Regex stationRegex;

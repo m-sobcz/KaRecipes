@@ -18,6 +18,7 @@ namespace KaRecipes.BL.Serialize
         readonly string groupNameAttribute = "name";
         readonly string parameterNameAttribute = "name";
         readonly string parameterValueAttribute = "value";
+
         public Recipe Deserialize(string text)
         {
             var root = XElement.Parse(text);
@@ -95,7 +96,7 @@ namespace KaRecipes.BL.Serialize
             }
             XElement xRoot = new("Parameters", xParameterGroups);
             return GenerateFormattedXml(xRoot);
-            // SaveXElementToFile(xRoot, path);
+           //  SaveXElementToFile(xRoot, path);
         }
         string GenerateFormattedXml(XElement xElement)
         {
