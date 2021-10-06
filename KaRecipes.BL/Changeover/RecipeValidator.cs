@@ -1,26 +1,28 @@
 ﻿using DeepCopy;
 using KaRecipes.BL.Interfaces;
 using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Utils;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Changeover
 {
-    public class RecipeVerificator
+    public class RecipeValidator
     {
         IPlcDataAccess plcDataAccess;
         public event EventHandler<string> RemovedUnknownParameter;
-        public RecipeVerificator(IPlcDataAccess plcDataAccess)
+        static Regex stationRegex = new(@"DB.+", RegexOptions.Compiled);
+        public RecipeValidator(IPlcDataAccess plcDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public async Task<Recipe> CheckAndSetParameterTypes(Recipe sourceRecipe) 
+        public async Task<Recipe> Validate(RawRecipe sourceRecipe) 
         {
-            Recipe converted = DeepCopier.Copy(sourceRecipe);
+            Recipe converted = new() { ParameterModules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
             Dictionary<string, string> availableNodes = plcDataAccess.GetAvailableNodes();
             foreach (var module in converted.ParameterModules)
             {
@@ -28,11 +30,10 @@ namespace KaRecipes.BL.Changeover
                 {
                     foreach (var parameter in station.ParameterSingles.ToList())
                     {
-                        var path = PlcNode.GetNodeIdentifier(module.Name, station.Name, parameter.Name);
+                        var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
                         if (availableNodes.TryGetValue(path, out string _)) 
                         {
-                            string nodeId = PlcNode.GetNodeIdentifier(module.Name, station.Name, parameter.Name);
-                            var readVal=await plcDataAccess.ReadParameter(nodeId);
+                            var readVal=await plcDataAccess.ReadParameter(path);
                             var newConvertedVal=Convert.ChangeType(parameter.Value, readVal.Value.GetType());
                             parameter.Value = newConvertedVal;
                         }
@@ -45,6 +46,12 @@ namespace KaRecipes.BL.Changeover
                 }
             }
             return converted;
+        }
+        public string GetRawNodeIdentifier(string module, string station, string parameter)
+        {
+            string stationName = stationRegex.Match(station).Value;
+            string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{stationName}.{parameter}";
+            return path;
         }
         void OnRemovedUnknownParameter(string recipeId) 
         {

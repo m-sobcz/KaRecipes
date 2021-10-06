@@ -1,7 +1,6 @@
 ﻿using DeepCopy;
 using KaRecipes.BL.Interfaces;
 using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,10 +19,9 @@ namespace KaRecipes.BL.Changeover
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public async Task Initialize(Recipe recipeTemplate) 
+        public void Initialize(Recipe recipeTemplate) 
         {
             ActualRecipe = recipeTemplate;
-            ActualRecipe = await ReadFromPlc();
         }
         public async Task WriteToPlc(Recipe recipe) 
         {
@@ -33,7 +31,7 @@ namespace KaRecipes.BL.Changeover
                 {
                     foreach (var parameter in station.ParameterSingles)
                     {
-                        string path=PlcNode.GetNodeIdentifier(module.Name, station.Name, parameter.Name);
+                        string path=GetNodeIdentifier(module.Name, station.Name, parameter.Name);
                         bool writingOk=await plcDataAccess.WriteParameter(path, parameter.Value);
                         if (writingOk == false) OnWriteToNodeFailed(path);
                     }
@@ -41,7 +39,6 @@ namespace KaRecipes.BL.Changeover
             }
             ActualRecipe = recipe;
         }
-
         public async Task<Recipe> ReadFromPlc()
         {
             if (ActualRecipe is null) throw new InvalidOperationException("Call Initialize with reference Recipe before reading from PLC");
@@ -52,7 +49,7 @@ namespace KaRecipes.BL.Changeover
                 {
                     foreach (var parameter in station.ParameterSingles)
                     {
-                        string path = PlcNode.GetNodeIdentifier(module.Name, station.Name, parameter.Name);
+                        string path = GetNodeIdentifier(module.Name, station.Name, parameter.Name);
                         var node=await plcDataAccess.ReadParameter(path);
                         parameter.Value = node.ToString();
                     }
@@ -64,6 +61,11 @@ namespace KaRecipes.BL.Changeover
         void OnWriteToNodeFailed(string path)
         {
             WriteToNodeFailed?.Invoke(this, path);
+        }
+        string GetNodeIdentifier(string module, string station, string parameter)
+        {
+            string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{station}.{parameter}";
+            return path;
         }
     }
 }

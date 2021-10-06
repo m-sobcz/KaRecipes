@@ -35,7 +35,7 @@ namespace KaRecipes.UI.ViewModels
                         {
                             var result =OpenFile?.Invoke(this);
                             (OpenedFileName, OpenedFileContent) = result.Value;
-                            Recipe recipe=recipeSerializer.Deserialize(OpenedFileContent);
+                            RawRecipe recipe=recipeSerializer.Deserialize(OpenedFileContent);
                             ParameterModules = new(recipe.ParameterModules);
                             OnPropertyChanged(nameof(ParameterModules));
                             recipeSerializer.FillRecipeWithHeaderInfo(recipe, OpenedFileName);

@@ -37,7 +37,7 @@ namespace KaRecipes.BL.Recipes.Tests
 ";
             RecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
-            var expected = new Recipe() {
+            var expected = new RawRecipe() {
                 ParameterModules = new List<ParameterModule>
             {
                 new ParameterModule()
@@ -108,7 +108,7 @@ namespace KaRecipes.BL.Recipes.Tests
             List<ParameterSingle> singles1 = new();
             singles1.Add(single11);
             singles1.Add(single12);
-            stations1.Add(new() { Name = "singles1", ParameterSingles = singles1});
+            stations1.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles1 });
 
             List<ParameterStation> stations2 = new();
             ParameterSingle single21 = new() { Name = "single21", Value = "21" };
@@ -116,26 +116,26 @@ namespace KaRecipes.BL.Recipes.Tests
             List<ParameterSingle> singles2 = new();
             singles2.Add(single21);
             singles2.Add(single22);
-            stations2.Add(new() { Name = "singles2", ParameterSingles = singles2 });
+            stations2.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles2 });
 
             Recipe recipe = new();
             recipe.ParameterModules = new();
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "module1", ParameterStations= stations1 });
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "module2", ParameterStations = stations2 });
+            recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
+            recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
 
             RecipeSerializer recipeSerializer = new();
             string actual = recipeSerializer.Serialize(recipe);
-            string expected = 
+            string expected =
 @"<Parameters>
   <ParameterGroups>
-    <ParameterGroup name=""module1"">
-      <ParameterGroup name=""singles1"">
+    <ParameterGroup name=""M01"">
+      <ParameterGroup name=""M01_DB_00_Parameters"">
         <Parameter name=""single11"" value=""11"" />
         <Parameter name=""single12"" value=""12"" />
       </ParameterGroup>
     </ParameterGroup>
-    <ParameterGroup name=""module2"">
-      <ParameterGroup name=""singles2"">
+    <ParameterGroup name=""M02"">
+      <ParameterGroup name=""M02_DB_00_Parameters"">
         <Parameter name=""single21"" value=""21"" />
         <Parameter name=""single22"" value=""22"" />
       </ParameterGroup>
@@ -148,7 +148,7 @@ namespace KaRecipes.BL.Recipes.Tests
         public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId() 
         {
             RecipeSerializer recipeSerializer = new();
-            Recipe recipe = new();
+            RawRecipe recipe = new();
             recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"C:\Users\MISO\Desktop\2up_12345.xp0");
             Assert.Equal("2up", recipe.Name);
             Assert.Equal(12345, recipe.VersionId);

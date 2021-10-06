@@ -11,12 +11,12 @@ using KaRecipes.BL.RecipeAggregate;
 
 namespace KaRecipes.BL.Changeover.Tests
 {
-    public class RecipeVerificatorTests
+    public class RecipeValidatorTests
     {
         
         private Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
         [Fact()]
-        public void CheckAndSetParameterTypes_AllFieldsExist_JustCallsReadParam()
+        public void Validate_AllFieldsExist_JustCallsReadParam()
         {
             //Arrange
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>()));
@@ -26,19 +26,20 @@ namespace KaRecipes.BL.Changeover.Tests
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single21", "single21");
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single22", "single22");
             mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(nodes);
+            mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>())).Returns(Task.FromResult(new ParameterSingle() {Value="101"}));
-            RecipeVerificator recipeVerificator = new(mockPlcDataAccess.Object);
-            Recipe inputRecipe = GetSampleRecipe();
+            RecipeValidator recipeVerificator = new(mockPlcDataAccess.Object);
+            RawRecipe inputRecipe = GetSampleRecipe();
             //Act
             HashSet<string> reportedNodes = new();
             recipeVerificator.RemovedUnknownParameter += (sender, nodeId) => reportedNodes.Add(nodeId);
-            Recipe convertedRecipe=recipeVerificator.CheckAndSetParameterTypes(inputRecipe).Result;
+            Recipe convertedRecipe=recipeVerificator.Validate(inputRecipe).Result;
             //Assert
             mockPlcDataAccess.Verify(mock => mock.ReadParameter(It.IsAny<string>()), Times.Exactly(4));
             Assert.Empty(reportedNodes);
         }
         [Fact()]
-        public void CheckAndSetParameterTypes_OneFieldDoesntExist_CallsReadAndTriggersEvent()
+        public void Validate_OneFieldDoesntExist_CallsReadAndTriggersEvent()
         {
             //Arrange
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>()));
@@ -47,20 +48,21 @@ namespace KaRecipes.BL.Changeover.Tests
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single12", "single12");
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single21", "single21");
             mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(nodes);
+            mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>())).Returns(Task.FromResult(new ParameterSingle() { Value = "101" }));
-            RecipeVerificator recipeVerificator = new(mockPlcDataAccess.Object);
-            Recipe inputRecipe = GetSampleRecipe();
+            RecipeValidator recipeVerificator = new(mockPlcDataAccess.Object);
+            RawRecipe inputRecipe = GetSampleRecipe();
             //Act
             HashSet<string> removedNodes = new();
             recipeVerificator.RemovedUnknownParameter += (sender, nodeId) => removedNodes.Add(nodeId);
-            Recipe convertedRecipe = recipeVerificator.CheckAndSetParameterTypes(inputRecipe).Result;
+            Recipe convertedRecipe = recipeVerificator.Validate(inputRecipe).Result;
             //Assert
             mockPlcDataAccess.Verify(mock => mock.ReadParameter(It.IsAny<string>()), Times.Exactly(3));
             Assert.Contains("KaRecipes.M02.DB_00_Parameters.single22", removedNodes);
         }
 
 
-        Recipe GetSampleRecipe() 
+        RawRecipe GetSampleRecipe() 
         {
             List<ParameterStation> stations1 = new();
             ParameterSingle single11 = new() { Name = "single11", Value = "11" };
@@ -78,7 +80,7 @@ namespace KaRecipes.BL.Changeover.Tests
             singles2.Add(single22);
             stations2.Add(new() { Name = "M02_DB_00_Parameters", ParameterSingles = singles2 });
 
-            Recipe recipe = new();
+            RawRecipe recipe = new();
             recipe.ParameterModules = new();
             recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
             recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });

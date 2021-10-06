@@ -1,5 +1,4 @@
 ﻿using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,11 +18,11 @@ namespace KaRecipes.BL.Serialize
         readonly string parameterNameAttribute = "name";
         readonly string parameterValueAttribute = "value";
 
-        public Recipe Deserialize(string text)
+        public RawRecipe Deserialize(string text)
         {
             var root = XElement.Parse(text);
             var loadedModules = root.Elements().Elements();
-            Recipe recipe = new();
+            RawRecipe recipe = new();
             foreach (var loadedModule in loadedModules)
             {
                 ParameterModule newParameterModule = LoadParameterModule(loadedModule);
@@ -59,7 +58,7 @@ namespace KaRecipes.BL.Serialize
             }
             return newParameterStation;
         }
-        public void FillRecipeWithHeaderInfo(Recipe recipe, string headerInfo)
+        public void FillRecipeWithHeaderInfo(RawRecipe recipe, string headerInfo)
         {
             Regex regex = new(@".+\\([^_,\.]+)_?([^\.]+)?");
             var match = regex.Match(headerInfo);
@@ -82,6 +81,7 @@ namespace KaRecipes.BL.Serialize
                 foreach (var station in module.ParameterStations)
                 {
                     XElement xStation = new("ParameterGroup");
+                    station.Name = module.Name +"_"+ station.Name;
                     xStation.SetAttributeValue("name", station.Name);
                     foreach (var singleParam in station.ParameterSingles)
                     {
