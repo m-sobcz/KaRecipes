@@ -10,7 +10,7 @@ namespace KaRecipes.BL.Utils
     static class PlcNode
     {
         readonly static string plcAccessPrefix = "KaRecipes";
-        readonly static Regex stationRegex = new(@"DB+", RegexOptions.Compiled);
+        readonly static Regex stationRegex = new(@"DB.+", RegexOptions.Compiled);
         public static string GetNodeIdentifier(string module, string station, string parameter)
         {
             string stationName = stationRegex.Match(station).Value;

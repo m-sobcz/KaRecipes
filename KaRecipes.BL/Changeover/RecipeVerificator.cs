@@ -26,7 +26,7 @@ namespace KaRecipes.BL.Changeover
             {
                 foreach (var station in module.ParameterStations)
                 {
-                    foreach (var parameter in station.ParameterSingles)
+                    foreach (var parameter in station.ParameterSingles.ToList())
                     {
                         var path = PlcNode.GetNodeIdentifier(module.Name, station.Name, parameter.Name);
                         if (availableNodes.TryGetValue(path, out string _)) 
@@ -41,7 +41,6 @@ namespace KaRecipes.BL.Changeover
                             station.ParameterSingles.Remove(parameter);
                             OnRemovedUnknownParameter(path);
                         }
-                        ;
                     }
                 }
             }
