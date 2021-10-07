@@ -14,11 +14,11 @@ namespace KaRecipes.BL.Changeover.Tests
     public class RecipeValidatorTests
     {
         
-        private Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
         [Fact()]
         public void Validate_AllFieldsExist_JustCallsReadParam()
         {
             //Arrange
+            Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>()));
             Dictionary<string, string> nodes = new();
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single11", "single11");
@@ -42,6 +42,7 @@ namespace KaRecipes.BL.Changeover.Tests
         public void Validate_OneFieldDoesntExist_CallsReadAndTriggersEvent()
         {
             //Arrange
+            Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
             mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>()));
             Dictionary<string, string> nodes = new();
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single11", "single11");
