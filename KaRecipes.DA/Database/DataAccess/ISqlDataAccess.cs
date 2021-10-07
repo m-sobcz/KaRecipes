@@ -3,7 +3,7 @@ using System.Data;
 
 namespace KaRecipes.DA.Database.DataAccess
 {
-    public interface IDbDataAccess
+    public interface ISqlDataAccess
     {
         int Delete(string sql, object parameter, CommandType commandType = CommandType.StoredProcedure);
         List<T> Load<T>(string sql, object parameter = null, CommandType commandType = CommandType.StoredProcedure);

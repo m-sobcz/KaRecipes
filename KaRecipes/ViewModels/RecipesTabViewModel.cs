@@ -18,9 +18,9 @@ namespace KaRecipes.UI.ViewModels
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate (string,string) OpenFileEventHandler(object sender);
-        IRecipeSerializer recipeSerializer;
+        IRawRecipeSerializer recipeSerializer;
         public RecipesTabViewModel(Func<Action<object>, Func<object, bool>, ICommand> getCommand,
-            IRecipeSerializer recipeSerializer) : base(getCommand)
+            IRawRecipeSerializer recipeSerializer) : base(getCommand)
         {
             this.recipeSerializer = recipeSerializer;
         }

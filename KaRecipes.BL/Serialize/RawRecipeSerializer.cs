@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 
 namespace KaRecipes.BL.Serialize
 {
-    public class RecipeSerializer : IRecipeSerializer
+    public class RawRecipeSerializer : IRawRecipeSerializer
     {
         readonly string groupNameAttribute = "name";
         readonly string parameterNameAttribute = "name";
@@ -81,7 +81,7 @@ namespace KaRecipes.BL.Serialize
                 foreach (var station in module.ParameterStations)
                 {
                     XElement xStation = new("ParameterGroup");
-                    station.Name = module.Name +"_"+ station.Name;
+                    station.Name = module.Name + "_" + station.Name;
                     xStation.SetAttributeValue("name", station.Name);
                     foreach (var singleParam in station.ParameterSingles)
                     {
@@ -96,7 +96,7 @@ namespace KaRecipes.BL.Serialize
             }
             XElement xRoot = new("Parameters", xParameterGroups);
             return GenerateFormattedXml(xRoot);
-           //  SaveXElementToFile(xRoot, path);
+            //  SaveXElementToFile(xRoot, path);
         }
         string GenerateFormattedXml(XElement xElement)
         {

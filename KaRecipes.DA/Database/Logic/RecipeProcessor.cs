@@ -9,10 +9,10 @@ namespace KaRecipes.DA.Database.Logic
 {
     public class RecipeProcessor : Processor
     {
-        private readonly IDbDataAccess dataAccess;
+        private readonly ISqlDataAccess dataAccess;
         //Nazwy wywolywanych stored procedures: Recipes_<nazwa_funkcji>,
         //np. Recipes_Create
-        public RecipeProcessor(IDbDataAccess dataAccess)
+        public RecipeProcessor(ISqlDataAccess dataAccess)
         {
             this.dataAccess = dataAccess;
             defaultStoredProceduresPrefix = "Recipes";

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Changeover
 {
-    public class RecipeValidator
+    public class RecipeValidator : IRecipeValidator
     {
         IPlcDataAccess plcDataAccess;
         public event EventHandler<string> RemovedUnknownParameter;
@@ -20,7 +20,7 @@ namespace KaRecipes.BL.Changeover
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public async Task<Recipe> Validate(RawRecipe sourceRecipe) 
+        public async Task<Recipe> Validate(RawRecipe sourceRecipe)
         {
             Recipe converted = new() { ParameterModules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
             Dictionary<string, string> availableNodes = plcDataAccess.GetAvailableNodes();
@@ -31,10 +31,10 @@ namespace KaRecipes.BL.Changeover
                     foreach (var parameter in station.ParameterSingles.ToList())
                     {
                         var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
-                        if (availableNodes.TryGetValue(path, out string _)) 
+                        if (availableNodes.TryGetValue(path, out string _))
                         {
-                            var readVal=await plcDataAccess.ReadParameter(path);
-                            var newConvertedVal=Convert.ChangeType(parameter.Value, readVal.Value.GetType());
+                            var readVal = await plcDataAccess.ReadParameter(path);
+                            var newConvertedVal = Convert.ChangeType(parameter.Value, readVal.Value.GetType());
                             parameter.Value = newConvertedVal;
                         }
                         else
@@ -47,13 +47,13 @@ namespace KaRecipes.BL.Changeover
             }
             return converted;
         }
-        public string GetRawNodeIdentifier(string module, string station, string parameter)
+        string GetRawNodeIdentifier(string module, string station, string parameter)
         {
             string stationName = stationRegex.Match(station).Value;
             string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{stationName}.{parameter}";
             return path;
         }
-        void OnRemovedUnknownParameter(string recipeId) 
+        void OnRemovedUnknownParameter(string recipeId)
         {
             RemovedUnknownParameter?.Invoke(this, recipeId);
         }

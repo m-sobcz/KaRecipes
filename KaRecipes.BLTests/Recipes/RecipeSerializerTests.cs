@@ -35,7 +35,7 @@ namespace KaRecipes.BL.Recipes.Tests
   </ParameterGroups>
 </Parameters>
 ";
-            RecipeSerializer recipeSerializer = new();
+            RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
             var expected = new RawRecipe() {
                 ParameterModules = new List<ParameterModule>
@@ -95,7 +95,7 @@ namespace KaRecipes.BL.Recipes.Tests
   <ParameterGroups>
   </ParameterGroups>
 </Parameters>";
-            RecipeSerializer recipeSerializer = new();
+            RawRecipeSerializer recipeSerializer = new();
             var result=recipeSerializer.Deserialize(xml);
             Assert.Empty(result.ParameterModules);
         }
@@ -123,7 +123,7 @@ namespace KaRecipes.BL.Recipes.Tests
             recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
             recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
 
-            RecipeSerializer recipeSerializer = new();
+            RawRecipeSerializer recipeSerializer = new();
             string actual = recipeSerializer.Serialize(recipe);
             string expected =
 @"<Parameters>
@@ -147,7 +147,7 @@ namespace KaRecipes.BL.Recipes.Tests
         [Fact()]
         public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId() 
         {
-            RecipeSerializer recipeSerializer = new();
+            RawRecipeSerializer recipeSerializer = new();
             RawRecipe recipe = new();
             recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"C:\Users\MISO\Desktop\2up_12345.xp0");
             Assert.Equal("2up", recipe.Name);

@@ -81,7 +81,7 @@ namespace KaRecipes
             services.AddSingleton<DiagnosticsTab>();
             services.AddSingleton<SettingsTab>();
             //Logic
-            services.AddTransient<IRecipeSerializer, RecipeSerializer>();
+            services.AddTransient<IRawRecipeSerializer, RawRecipeSerializer>();
         }
 
 

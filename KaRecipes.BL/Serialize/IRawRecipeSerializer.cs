@@ -2,7 +2,7 @@
 
 namespace KaRecipes.BL.Serialize
 {
-    public interface IRecipeSerializer
+    public interface IRawRecipeSerializer
     {
         RawRecipe Deserialize(string text);
         void FillRecipeWithHeaderInfo(RawRecipe recipe, string headerInfo);
