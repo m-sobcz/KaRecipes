@@ -24,10 +24,13 @@ namespace KaRecipes.DA.OPC
         SessionReconnectHandler reconnectHandler;
         readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
+        Dictionary<uint,IObserver> observers = new();
 
         readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
 
         public string PlcAccessPrefix => nodeIdPrefix;
+
+        public ParameterSingle ParameterSingle { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public OpcClient()
         {
@@ -75,7 +78,7 @@ namespace KaRecipes.DA.OPC
             return readVal;
         }
 
-        public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval)
+        public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval, IObserver observer)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
             var MonitoredItems = new List<MonitoredItem>
@@ -92,6 +95,7 @@ namespace KaRecipes.DA.OPC
             subscription.AddItems(MonitoredItems);
             await Task.Run(() => session.AddSubscription(subscription));
             subscription.Create();
+            observers.Add(subscription.Id, observer);
         }
 
         public async Task<bool> WriteParameter(string nodeIdentifier, object value)
@@ -213,8 +217,10 @@ namespace KaRecipes.DA.OPC
                 {
                     Name = item.DisplayName,
                     Value = DataValueToNetType(value)
-                };
+                };   
                 OnOpcDataReceived(args);
+                observers.TryGetValue(item.Subscription.Id, out IObserver observer);
+                observer?.Update(args);
             }
         }
 
@@ -330,5 +336,6 @@ namespace KaRecipes.DA.OPC
 
             return converted;
         }
+
     }
 }

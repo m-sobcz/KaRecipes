@@ -28,7 +28,7 @@ namespace KaRecipes.Integration
                 "KaRecipes.M01.OPC_UA_T.zmiena1",
                 "KaRecipes.M01.OPC_UA_T.zmiena2"
             };
-            client.CreateSubscriptionsWithInterval(subscriptions, 1000).Wait();
+            client.CreateSubscriptionsWithInterval(subscriptions, 1000,new Observer()).Wait();
             client.OpcDataReceived += Client_opcDataReceived;
             bool res = client.WriteParameter("KaRecipes.M01.OPC_UA_T.zmiena1", (short)2).Result;
 

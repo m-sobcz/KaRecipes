@@ -65,6 +65,7 @@ namespace KaRecipes.BL.Changeover.Tests
 
         RawRecipe GetSampleRecipe() 
         {
+
             List<ParameterStation> stations1 = new();
             ParameterSingle single11 = new() { Name = "single11", Value = "11" };
             ParameterSingle single12 = new() { Name = "single12", Value = "12" };

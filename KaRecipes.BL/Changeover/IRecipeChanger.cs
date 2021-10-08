@@ -1,10 +1,11 @@
-﻿using KaRecipes.BL.RecipeAggregate;
+﻿using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.RecipeAggregate;
 using System;
 using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Changeover
 {
-    public interface IRecipeChanger
+    public interface IRecipeChanger : IObserver
     {
         event EventHandler<string> WriteToNodeFailed;
 

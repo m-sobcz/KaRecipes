@@ -12,9 +12,12 @@ namespace KaRecipes.BL.Changeover
 {
     public class RecipeChanger : IRecipeChanger
     {
-        Recipe ActualRecipe { get; set; }
+        public Recipe ActualRecipe { get; set; }
+        readonly int publishingInterval = 1000;
         readonly IPlcDataAccess plcDataAccess;
         public event EventHandler<string> WriteToNodeFailed;
+        public event EventHandler<Recipe> ActualRecipeChanged;
+        Regex regex = new(@"([^.]+)\.([^.]+)\.([^.]+)\.([^.]+)", RegexOptions.Compiled);
         public RecipeChanger(IPlcDataAccess plcDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
@@ -72,14 +75,8 @@ namespace KaRecipes.BL.Changeover
                     }
                 }
             }
-            await plcDataAccess.CreateSubscriptionsWithInterval(paths, 1000);
-            plcDataAccess.OpcDataReceived += PlcDataAccess_OpcDataReceived;
+            await plcDataAccess.CreateSubscriptionsWithInterval(paths, publishingInterval, this);
             return recipe;
-        }
-
-        private void PlcDataAccess_OpcDataReceived(object sender, PlcDataReceivedEventArgs e)
-        {
-            throw new NotImplementedException();
         }
 
         void OnWriteToNodeFailed(string path)
@@ -90,6 +87,20 @@ namespace KaRecipes.BL.Changeover
         {
             string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{station}.{parameter}";
             return path;
+        }
+
+        public void Update(PlcDataReceivedEventArgs subject)
+        {
+            string name = subject.Name;
+            var match = regex.Match(name);
+            var module = ActualRecipe.ParameterModules.Where(x => x.Name == match.Groups[2].Value).FirstOrDefault();
+            var station=module.ParameterStations.Where(x => x.Name == match.Groups[3].Value).FirstOrDefault();
+            var parameter = station.ParameterSingles.Where(x => x.Name == match.Groups[4].Value).FirstOrDefault();
+            if(parameter.Value != subject.Value) 
+            {
+                parameter.Value = subject.Value;
+                ActualRecipeChanged?.Invoke(this, ActualRecipe);
+            }    
         }
     }
 }

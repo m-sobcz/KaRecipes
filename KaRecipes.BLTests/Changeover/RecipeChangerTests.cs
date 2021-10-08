@@ -15,6 +15,35 @@ namespace KaRecipes.BL.Changeover.Tests
     public class RecipeChangerTests
     {
         [Fact()]
+        public void Update_CorrectData_UpdatesActualRecipeAndTriggersEvent() 
+        {
+            //Arrange
+            Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
+            Recipe recipe = GetSampleRecipe();
+            Recipe eventRecipe = new();
+            RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
+            recipeChanger.ActualRecipeChanged += (sender, recipe) => eventRecipe = recipe;
+            //Act
+            
+            PlcDataReceivedEventArgs plcDataReceivedEventArgs = new() { Name = "KaRecipes.M01.DB_00_Parameters.single11",Value=123};
+            recipeChanger.Initialize(GetSampleRecipe());
+            recipeChanger.Update(plcDataReceivedEventArgs);
+            //Assert
+            Assert.Equal(123, recipeChanger.ActualRecipe.ParameterModules
+                .Where(x => x.Name == "M01").FirstOrDefault().ParameterStations
+                .Where(x => x.Name == "DB_00_Parameters").FirstOrDefault().ParameterSingles
+                .Where(x => x.Name == "single11").FirstOrDefault().Value);
+            CompareLogic compareLogic = new();
+            var comparison = compareLogic.Compare(recipeChanger.ActualRecipe, eventRecipe);
+            Assert.True(comparison.AreEqual);
+        }
+
+        private void RecipeChanger_ActualRecipeChanged(object sender, Recipe e)
+        {
+            throw new NotImplementedException();
+        }
+
+        [Fact()]
         public void WriteToPlc_AllNodesCorrect_ExecutesWithoutFails()
         {
             //Arrange
