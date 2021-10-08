@@ -11,7 +11,7 @@ namespace KaRecipes.BL.Interfaces
 
         Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval, IObserver observer);
         
-        Task<ParameterSingle> ReadParameter(string nodeIdentifier);
+        Task<DataNode> ReadParameter(string nodeIdentifier);
 
         Task Start();
 

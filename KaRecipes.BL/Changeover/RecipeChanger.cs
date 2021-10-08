@@ -16,7 +16,7 @@ namespace KaRecipes.BL.Changeover
         readonly int publishingInterval = 1000;
         readonly IPlcDataAccess plcDataAccess;
         public event EventHandler<string> WriteToNodeFailed;
-        public event EventHandler<PlcDataReceivedEventArgs> ActualRecipeChanged;
+        public event EventHandler<Recipe> ActualRecipeChanged;
         Regex regex = new(@"([^.]+)\.([^.]+)\.([^.]+)\.([^.]+)", RegexOptions.Compiled);
         public RecipeChanger(IPlcDataAccess plcDataAccess)
         {
@@ -101,7 +101,7 @@ namespace KaRecipes.BL.Changeover
             if(parameter.Value != subject.Value) 
             {
                 parameter.Value = subject.Value;
-                ActualRecipeChanged?.Invoke(this, new() {Name= parameter.Name,Value= parameter.Value });
+                ActualRecipeChanged?.Invoke(this, ActualRecipe);
             }    
         }
     }

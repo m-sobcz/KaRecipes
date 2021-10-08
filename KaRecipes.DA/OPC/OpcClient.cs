@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using KaRecipes.BL;
 using KaRecipes.BL.Interfaces;
 using KaRecipes.BL.RecipeAggregate;
 using Opc.Ua;
@@ -56,12 +57,12 @@ namespace KaRecipes.DA.OPC
             session.KeepAlive += Client_KeepAlive;
         }
 
-        public async Task<ParameterSingle> ReadParameter(string nodeIdentifier)
+        public async Task<DataNode> ReadParameter(string nodeIdentifier)
         {
             var readVal = await ReadNode(nodeIdentifier);
             var convertedVal = DataValueToNetType(readVal);
             var name = ExtractNameFromIdentifier(nodeIdentifier);
-            return new ParameterSingle() { Name = name, Value = convertedVal }; ;
+            return new DataNode() { Name = name, Value = convertedVal }; ;
         }
 
         string ExtractNameFromIdentifier(string nodeIdentifier)

@@ -33,7 +33,7 @@ namespace KaRecipes.BL.Services
             recipeChanger.ActualRecipeChanged += RecipeChanger_ActualRecipeChanged;
         }
 
-        private void RecipeChanger_ActualRecipeChanged(object sender, PlcDataReceivedEventArgs e)
+        private void RecipeChanger_ActualRecipeChanged(object sender, Recipe e)
         {
             throw new NotImplementedException();
             //Task.Run(()=>dbDataAccess.Write(recipeChanger.ActualRecipe));

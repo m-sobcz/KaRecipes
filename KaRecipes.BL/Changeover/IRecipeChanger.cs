@@ -8,7 +8,7 @@ namespace KaRecipes.BL.Changeover
     public interface IRecipeChanger : IObserver
     {
         event EventHandler<string> WriteToNodeFailed;
-        event EventHandler<PlcDataReceivedEventArgs> ActualRecipeChanged;
+        event EventHandler<Recipe> ActualRecipeChanged;
         public Recipe ActualRecipe { get; set; }
         void Initialize(Recipe recipeTemplate);
         Task<Recipe> ReadFromPlc();
