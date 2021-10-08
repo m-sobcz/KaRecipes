@@ -19,7 +19,7 @@ namespace KaRecipes.BL.Services
         IRawRecipeSerializer recipeSerializer;
         Recipe fileRecipe;
 
-        private Recipe _actualRecipe;
+
 
         public Recipe ActualRecipe => recipeChanger.ActualRecipe;
 

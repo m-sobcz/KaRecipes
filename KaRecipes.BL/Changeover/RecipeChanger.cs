@@ -13,7 +13,9 @@ namespace KaRecipes.BL.Changeover
     public class RecipeChanger : IRecipeChanger
     {
         public Recipe ActualRecipe { get; set; }
-        readonly int publishingInterval = 1000;
+
+        public int PublishingInterval => 1000;
+
         readonly IPlcDataAccess plcDataAccess;
         public event EventHandler<string> WriteToNodeFailed;
         public event EventHandler<Recipe> ActualRecipeChanged;
@@ -77,7 +79,7 @@ namespace KaRecipes.BL.Changeover
                     }
                 }
             }
-            await plcDataAccess.CreateSubscriptionsWithInterval(paths, publishingInterval, this);
+            await plcDataAccess.CreateSubscriptionsWithInterval(paths, PublishingInterval, this);
             return recipe;
         }
 

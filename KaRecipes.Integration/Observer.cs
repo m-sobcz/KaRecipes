@@ -9,6 +9,8 @@ namespace KaRecipes.Integration
 {
     public class Observer : IObserver
     {
+        public int PublishingInterval => 1000;
+
         public void Update(PlcDataReceivedEventArgs subject)
         {
             Console.WriteLine(subject.Name + ": " + subject.Value);

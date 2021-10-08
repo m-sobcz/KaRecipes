@@ -9,5 +9,6 @@ namespace KaRecipes.BL.Interfaces
     public interface IObserver
     {
         public void Update(PlcDataReceivedEventArgs subject);
+        public int PublishingInterval { get;  }
     }
 }
