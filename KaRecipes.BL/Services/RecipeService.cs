@@ -18,15 +18,10 @@ namespace KaRecipes.BL.Services
         IDbDataAccess<Recipe> dbDataAccess;
         IRawRecipeSerializer recipeSerializer;
         Recipe fileRecipe;
-        public Recipe PlcRecipe { get; set; }
 
         private Recipe _actualRecipe;
 
-        public Recipe ActualRecipe
-        {
-            get { return _actualRecipe; }
-            set { _actualRecipe = value; }
-        }
+        public Recipe ActualRecipe => recipeChanger.ActualRecipe;
 
         public RecipeService(IRecipeChanger recipeChanger, IRecipeValidator recipeValidator,
             IRawRecipeSerializer recipeSerialzier, IDbDataAccess<Recipe> dbDataAccess)
@@ -38,10 +33,10 @@ namespace KaRecipes.BL.Services
             recipeChanger.ActualRecipeChanged += RecipeChanger_ActualRecipeChanged;
         }
 
-        private void RecipeChanger_ActualRecipeChanged(object sender, Recipe recipe)
+        private void RecipeChanger_ActualRecipeChanged(object sender, PlcDataReceivedEventArgs e)
         {
-            PlcRecipe = recipe;
-            Task.Run(()=>dbDataAccess.Write(PlcRecipe));
+            throw new NotImplementedException();
+            //Task.Run(()=>dbDataAccess.Write(recipeChanger.ActualRecipe));
         }
 
         async Task<Recipe> Deserialize(string serialized) 
@@ -54,8 +49,7 @@ namespace KaRecipes.BL.Services
         {
             recipeChanger.Initialize(recipe);
             await recipeChanger.WriteToPlc(recipe);
-            PlcRecipe = recipe;
-            await dbDataAccess.Write(PlcRecipe);
+            await dbDataAccess.Write(recipeChanger.ActualRecipe);
         } 
         string Serialize()
         {

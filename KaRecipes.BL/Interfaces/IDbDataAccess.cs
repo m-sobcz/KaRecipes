@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Interfaces
 {
-    public interface IDbDataAccess<T> : IAggregateRoot
+    public interface IDbDataAccess<T>
     {
         Task<T> Read();
         Task<int?> Write(T data);
