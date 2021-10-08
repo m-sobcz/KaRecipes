@@ -40,6 +40,7 @@ namespace KaRecipes.BL.Changeover
                     }
                 }
             }
+            ActualRecipe = recipe;
         }
         public async Task<Recipe> ReadFromPlc()
         {
@@ -57,6 +58,7 @@ namespace KaRecipes.BL.Changeover
                     }
                 }
             }
+            ActualRecipe = recipe;
             return recipe;
         }
         public async Task<Recipe> Subscribe()
