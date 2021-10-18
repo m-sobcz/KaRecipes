@@ -19,8 +19,6 @@ namespace KaRecipes.BL.Services
         IRawRecipeSerializer recipeSerializer;
         Recipe fileRecipe;
 
-
-
         public Recipe ActualRecipe => recipeChanger.ActualRecipe;
 
         public RecipeService(IRecipeChanger recipeChanger, IRecipeValidator recipeValidator,
