@@ -1,5 +1,6 @@
 ﻿using KaRecipes.BL.Interfaces;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -10,11 +11,11 @@ namespace KaRecipes.BL.PartData
 {
     public class PlcRequestHandler : IObserver
     {
-        Dictionary<string, DataNode> dataNodes;
-        Dictionary<string, Action> commands;
+        Dictionary<string, IRequest> requests;
+        Dictionary<string, RequestData> dataNodes;
+        Dictionary<string, RequestData> commands;
         IPlcDataAccess plcDataAccess;
         public int PublishingInterval => 1000;
-        ReadRequestData readRequestData;
 
 
         public PlcRequestHandler(IPlcDataAccess plcDataAccess)
@@ -22,21 +23,39 @@ namespace KaRecipes.BL.PartData
             this.plcDataAccess = plcDataAccess;
         }
 
-        public void Start(Dictionary<string, DataNode> dataNodes)
+        public void Start(Dictionary<string, IRequest> requests)
         {
-            this.dataNodes = dataNodes;
-            List<string> keys = dataNodes.Keys.ToList();
-            plcDataAccess.CreateSubscriptionsWithInterval(keys, PublishingInterval, this);
+            this.requests = requests;
+            dataNodes = new();
+            commands = new();
+            foreach (var item in requests)
+            {
+                commands.Add(item.Value.Command.NodeId, item.Value.Command);
+                dataNodes.Add(item.Value.Command.NodeId, item.Value.Command);
+                dataNodes.Add(item.Value.Acknowedgle.NodeId, item.Value.Acknowedgle);
+                foreach (var readData in item.Value.Data)
+                {
+                    dataNodes.Add(readData.Key, readData.Value);
+                }
+            }
+            List<string> monitoredNodeIdentifiers = dataNodes.Keys.ToList();
+            plcDataAccess.CreateSubscriptionsWithInterval(monitoredNodeIdentifiers, PublishingInterval, this);
         }
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            dataNodes.TryGetValue(subject.Name, out DataNode dataNode);
-            //Wykrywanie zbocza na sygnale komendy
-            if (commands.TryGetValue(dataNode.Name, out Action commandAction) && subject.Value.Equals(true) && dataNode.Value.Equals(false))
+            dataNodes.TryGetValue(subject.Name, out RequestData dataNode);
+            if (commands.TryGetValue(subject.Name, out RequestData commandNode))
             {
-                commandAction();
-            }
+                if (subject.Value.Equals(true) && dataNode.Value.Equals(false)) 
+                { 
+                    commandNode.ParentRequest.Start();
+                }
+                if (subject.Value.Equals(false) && dataNode.Value.Equals(true))
+                {
+                    commandNode.ParentRequest.Stop();
+                }
+            }    
             dataNode.Value = subject.Value;
         }
     }

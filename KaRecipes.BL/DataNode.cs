@@ -9,6 +9,7 @@ namespace KaRecipes.BL
     public class DataNode
     {
         public string Name { get; set; }
+        public string NodeId { get; set; }
         public object Value { get; set; }
     }
 }

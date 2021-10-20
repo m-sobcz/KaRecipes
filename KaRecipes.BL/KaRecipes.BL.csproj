@@ -15,4 +15,8 @@
     <PackageReference Include="DeepCopy" Version="1.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PlcRequest\" />
+  </ItemGroup>
+
 </Project>

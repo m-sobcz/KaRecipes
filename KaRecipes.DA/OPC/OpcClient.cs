@@ -62,7 +62,7 @@ namespace KaRecipes.DA.OPC
             var readVal = await ReadNode(nodeIdentifier);
             var convertedVal = DataValueToNetType(readVal);
             var name = ExtractNameFromIdentifier(nodeIdentifier);
-            return new DataNode() { Name = name, Value = convertedVal }; ;
+            return new DataNode() { Name = name, Value = convertedVal, NodeId=nodeIdentifier }; ;
         }
 
         string ExtractNameFromIdentifier(string nodeIdentifier)
