@@ -27,6 +27,10 @@ namespace KaRecipes.BL.PlcRequest
             {
                 Data.Values.Where(x => x.Name == item.Name).FirstOrDefault().Value = item.Value;
             }
+            foreach (var item in Data.Values)
+            {
+                await plcDataAccess.WriteParameter(item.NodeId, item.Value);
+            }
             return dataReceived.DataNodes.Count > 0;
         }
     }
