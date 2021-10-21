@@ -1,4 +1,5 @@
 ﻿using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.PlcRequest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PartData
+namespace KaRecipes.BL.PlcRequest
 {
     public class PlcRequestHandler : IObserver
     {

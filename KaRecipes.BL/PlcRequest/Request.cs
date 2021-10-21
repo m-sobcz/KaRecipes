@@ -1,4 +1,5 @@
 ﻿using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.PlcRequest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,30 +8,26 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PartData
+namespace KaRecipes.BL.PlcRequest
 {
-    public class WriteRequest : IRequest
+    public abstract class Request : IRequest
     {
-        public ConcurrentDictionary<string, RequestData> Data { get; set; }
+        public Dictionary<string, RequestData> Data { get; set; }
         public RequestData Command { get; set; }
         public RequestData Acknowedgle { get; set; }
         public RequestData Error { get; set; }
-        IDbDataAccess<Dictionary<string, object>> dbDataAccess;
-        IPlcDataAccess plcDataAccess;
-        public WriteRequest(IDbDataAccess<Dictionary<string, object>> dbDataAccess, IPlcDataAccess plcDataAccess)
+        public string Module { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string Station { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        protected IPlcDataAccess plcDataAccess;
+        public Request(IPlcDataAccess plcDataAccess)
         {
-            this.dbDataAccess = dbDataAccess;
             this.plcDataAccess = plcDataAccess;
         }
         public async Task Start()
         {
-            Dictionary<string, object> transferData = new();
-            foreach (var item in Data)
-            {
-                transferData.Add(item.Value.Name, item.Value.Value);
-            }
-            int? dataAdded = await dbDataAccess.Write(transferData);
-            if (dataAdded.HasValue && dataAdded.Value > 0)
+            bool executed = await Execute();
+            if (executed)
             {
                 await plcDataAccess.WriteParameter(Acknowedgle.NodeId, true);
             }
@@ -44,5 +41,6 @@ namespace KaRecipes.BL.PartData
             await plcDataAccess.WriteParameter(Acknowedgle.NodeId, false);
             await plcDataAccess.WriteParameter(Error.NodeId, false);
         }
+        public abstract Task<bool> Execute();
     }
 }
