@@ -10,7 +10,6 @@ namespace KaRecipes.BL.PlcRequest
 {
     class ReadRequest : Request
     {
-
         IDbDataAccess<PartData> dbDataAccess;
         string module;
         string station;
@@ -22,7 +21,7 @@ namespace KaRecipes.BL.PlcRequest
         }
         public override async Task<bool> Execute()
         {
-            var dataReceived = await dbDataAccess.Read();
+            var dataReceived = await dbDataAccess.Read(TargetId);
             foreach (var item in dataReceived.DataNodes)
             {
                 Data.Values.Where(x => x.Name == item.Name).FirstOrDefault().Value = item.Value;

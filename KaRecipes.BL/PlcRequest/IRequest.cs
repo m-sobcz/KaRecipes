@@ -10,7 +10,7 @@ namespace KaRecipes.BL.PlcRequest
         RequestData Acknowedgle { get; set; }
         RequestData Command { get; set; }
         Dictionary<string, RequestData> Data { get; set; }
-        
+        RequestData TargetId { get; set; }
         RequestData Error { get; set; }
 
         Task Start();

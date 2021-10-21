@@ -8,7 +8,7 @@ namespace KaRecipes.BL.Interfaces
 {
     public interface IDbDataAccess<T>
     {
-        Task<T> Read();
+        Task<T> Read(object id);
         Task<int?> Write(T data);
     }
 }

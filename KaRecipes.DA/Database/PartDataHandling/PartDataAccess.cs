@@ -16,7 +16,7 @@ namespace KaRecipes.DA.Database.PartDataHandling
         {
             this.sqlDataAccess = sqlDataAccess;
         }
-        public Task<PartData> Read()
+        public Task<PartData> Read(object id)
         {
             throw new NotImplementedException();
         }

@@ -10,7 +10,7 @@ namespace KaRecipes.DA.Database.Logic
 {
     class PartDataProcessor : IDbDataAccess<PartData>
     {
-        public Task<PartData> Read()
+        public Task<PartData> Read(object id)
         {
             throw new NotImplementedException();
         }

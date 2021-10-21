@@ -34,6 +34,7 @@ namespace KaRecipes.BL.Services
                 {
                     dataNodes.Add(readData.Key, readData.Value);
                 }
+                dataNodes.TryAdd(item.Value.TargetId.NodeId, item.Value.TargetId);
                 dataNodes.Add(item.Value.Command.NodeId, item.Value.Command);
                 commands.Add(item.Value.Command.NodeId, item.Value.Command);
             }
@@ -46,8 +47,10 @@ namespace KaRecipes.BL.Services
             dataNodes.TryGetValue(subject.Name, out RequestData dataNode);
             if (commands.TryGetValue(subject.Name, out RequestData commandNode))
             {
+                commandNode.ParentRequest.Command = commandNode;
                 if (subject.Value.Equals(true) && dataNode.Value.Equals(false))
                 {
+                    commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
                     commandNode.ParentRequest.Start();
                 }
                 if (subject.Value.Equals(false) && dataNode.Value.Equals(true))
