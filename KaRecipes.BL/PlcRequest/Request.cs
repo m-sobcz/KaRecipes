@@ -16,8 +16,6 @@ namespace KaRecipes.BL.PlcRequest
         public RequestData Command { get; set; }
         public RequestData Acknowedgle { get; set; }
         public RequestData Error { get; set; }
-        public string Module { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public string Station { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         protected IPlcDataAccess plcDataAccess;
         public Request(IPlcDataAccess plcDataAccess)

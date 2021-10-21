@@ -18,26 +18,24 @@ namespace KaRecipes.BL.PlcRequest
         IPlcDataAccess plcDataAccess;
         public int PublishingInterval => 1000;
 
-
-        public PlcRequestHandler(IPlcDataAccess plcDataAccess)
+        public PlcRequestHandler(IPlcDataAccess plcDataAccess, Dictionary<string, IRequest> requests)
         {
+            this.requests = requests;
             this.plcDataAccess = plcDataAccess;
         }
 
-        public void Start(Dictionary<string, IRequest> requests)
+        public void Start()
         {
-            this.requests = requests;
             dataNodes = new();
             commands = new();
             foreach (var item in requests)
-            {
-                commands.Add(item.Value.Command.NodeId, item.Value.Command);
-                dataNodes.Add(item.Value.Command.NodeId, item.Value.Command);
-                dataNodes.Add(item.Value.Acknowedgle.NodeId, item.Value.Acknowedgle);
+            {         
                 foreach (var readData in item.Value.Data)
                 {
                     dataNodes.Add(readData.Key, readData.Value);
                 }
+                dataNodes.Add(item.Value.Command.NodeId, item.Value.Command);
+                commands.Add(item.Value.Command.NodeId, item.Value.Command);
             }
             List<string> monitoredNodeIdentifiers = dataNodes.Keys.ToList();
             plcDataAccess.CreateSubscriptionsWithInterval(monitoredNodeIdentifiers, PublishingInterval, this);
