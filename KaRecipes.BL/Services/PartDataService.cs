@@ -48,12 +48,12 @@ namespace KaRecipes.BL.Services
             if (commands.TryGetValue(subject.Name, out RequestData commandNode))
             {
                 commandNode.ParentRequest.Command = commandNode;
-                if (subject.Value.Equals(true) && dataNode.Value.Equals(false))
+                if (subject.Value.Equals(true) && dataNode.Value!=subject.Value)
                 {
                     commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
                     commandNode.ParentRequest.Start();
                 }
-                if (subject.Value.Equals(false) && dataNode.Value.Equals(true))
+                if (subject.Value.Equals(false) && dataNode.Value != subject.Value)
                 {
                     commandNode.ParentRequest.Stop();
                 }

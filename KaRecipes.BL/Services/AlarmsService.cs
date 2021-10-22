@@ -11,12 +11,14 @@ namespace KaRecipes.BL.Services
     public class AlarmsService : IObserver
     {
         IPlcDataAccess plcDataAccess;
+        IDbDataAccess<Alarm> dbDataAccess;
         public Dictionary<string, Alarm> Alarms { get; private set; }
         public int PublishingInterval => 1000;
 
-        public AlarmsService(IPlcDataAccess plcDataAccess)
+        public AlarmsService(IPlcDataAccess plcDataAccess, IDbDataAccess<Alarm> dbDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
+            this.dbDataAccess = dbDataAccess;
         }
 
         public void Start(Dictionary<string, Alarm> alarms)
@@ -29,7 +31,9 @@ namespace KaRecipes.BL.Services
         public void Update(PlcDataReceivedEventArgs subject)
         {
             Alarms.TryGetValue(subject.Name, out Alarm alarm);
+            bool valueChanged = alarm.Value != subject.Value;      
             alarm.Value = subject.Value;
+            if (valueChanged) dbDataAccess.Write(alarm);
         }
     }
 }
