@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace KaRecipes.DA.OPC
         SessionReconnectHandler reconnectHandler;
         readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
-        Dictionary<uint,IObserver> observers = new();
+        Dictionary<uint, IObserver> observers = new();
 
         readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
 
@@ -62,7 +63,7 @@ namespace KaRecipes.DA.OPC
             var readVal = await ReadNode(nodeIdentifier);
             var convertedVal = DataValueToNetType(readVal);
             var name = ExtractNameFromIdentifier(nodeIdentifier);
-            return new DataNode() { Name = name, Value = convertedVal, NodeId=nodeIdentifier }; ;
+            return new DataNode() { Name = name, Value = convertedVal, NodeId = nodeIdentifier }; ;
         }
 
         string ExtractNameFromIdentifier(string nodeIdentifier)
@@ -84,7 +85,7 @@ namespace KaRecipes.DA.OPC
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
             var MonitoredItems = new List<MonitoredItem>
             {
-                new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
+                // new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
             };
             foreach (var item in monitoredNodeIdentifiers)
             {
@@ -218,7 +219,7 @@ namespace KaRecipes.DA.OPC
                 {
                     Name = item.DisplayName,
                     Value = DataValueToNetType(value)
-                };   
+                };
                 OnOpcDataReceived(args);
                 observers.TryGetValue(item.Subscription.Id, out IObserver observer);
                 observer?.Update(args);
@@ -251,86 +252,103 @@ namespace KaRecipes.DA.OPC
         }
 
         public void Dispose()
-        { 
+        {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         private static object DataValueToNetType(DataValue input)
         {
+            var enumerableInput = input as IEnumerable;
+            if (input?.WrappedValue.TypeInfo.ValueRank == -1)
+            {
+                return GetSingleObjectFromDataValue(input.Value, input.WrappedValue.TypeInfo.BuiltInType);
+            }
+            else
+            {
+                List<object> converedList = new();
+                foreach (var item in input.Value as IEnumerable)
+                {
+                    var converted = GetSingleObjectFromDataValue(item, input.WrappedValue.TypeInfo.BuiltInType);
+                    converedList.Add(converted);
+                }
+                return converedList;
+            }
+        }
+        static object GetSingleObjectFromDataValue(object input, BuiltInType opcType)
+        {
             object converted;
-            if (input?.WrappedValue.TypeInfo.ValueRank != -1) return null;//ignore arrays
-            switch (input?.WrappedValue.TypeInfo.BuiltInType)
+            switch (opcType)
             {
                 case BuiltInType.Boolean:
                     {
-                        converted = Convert.ToBoolean(input.Value);
+                        converted = Convert.ToBoolean(input);
                         break;
                     }
 
                 case BuiltInType.SByte:
                     {
-                        converted = Convert.ToSByte(input.Value);
+                        converted = Convert.ToSByte(input);
                         break;
                     }
 
                 case BuiltInType.Byte:
                     {
-                        converted = Convert.ToByte(input.Value);
+                        converted = Convert.ToByte(input);
                         break;
                     }
 
                 case BuiltInType.Int16:
                     {
-                        converted = Convert.ToInt16(input.Value);
+                        converted = Convert.ToInt16(input);
                         break;
                     }
 
                 case BuiltInType.UInt16:
                     {
-                        converted = Convert.ToUInt16(input.Value);
+                        converted = Convert.ToUInt16(input);
                         break;
                     }
 
                 case BuiltInType.Int32:
                     {
-                        converted = Convert.ToInt32(input.Value);
+                        converted = Convert.ToInt32(input);
                         break;
                     }
 
                 case BuiltInType.UInt32:
                     {
-                        converted = Convert.ToUInt32(input.Value);
+                        converted = Convert.ToUInt32(input);
                         break;
                     }
 
                 case BuiltInType.Int64:
                     {
-                        converted = Convert.ToInt64(input.Value);
+                        converted = Convert.ToInt64(input);
                         break;
                     }
 
                 case BuiltInType.UInt64:
                     {
-                        converted = Convert.ToUInt64(input.Value);
+                        converted = Convert.ToUInt64(input);
                         break;
                     }
 
                 case BuiltInType.Float:
                     {
-                        converted = Convert.ToSingle(input.Value);
+                        converted = Convert.ToSingle(input);
                         break;
                     }
 
                 case BuiltInType.Double:
                     {
-                        converted = Convert.ToDouble(input.Value);
+                        converted = Convert.ToDouble(input);
                         break;
                     }
 
                 default:
                     {
-                        converted = input.Value;
+                        converted = input;
                         break;
                     }
             }

@@ -26,11 +26,13 @@ namespace KaRecipes.Integration
             List<string> subscriptions = new()
             {
                 "KaRecipes.M01.OPC_UA_T.zmiena1",
-                "KaRecipes.M01.OPC_UA_T.zmiena2"
+                "KaRecipes.M01.OPC_UA_T.zmiena2",
+                "KaRecipes.M01.OPC_UA_T.tab"
             };
-            client.CreateSubscriptionsWithInterval(subscriptions, 1000,new Observer()).Wait();
-            client.OpcDataReceived += Client_opcDataReceived;
-            bool res = client.WriteParameter("KaRecipes.M01.OPC_UA_T.zmiena1", (short)2).Result;
+            var observer = new Observer();
+            client.CreateSubscriptionsWithInterval(subscriptions, 1000,observer).Wait();
+            //client.OpcDataReceived += Client_opcDataReceived;
+            bool res = client.WriteParameter("KaRecipes.M01.OPC_UA_T.zmiena1", (short)5).Result;
 
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();

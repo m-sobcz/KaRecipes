@@ -10,7 +10,7 @@ namespace KaRecipes.BL.Services
 {
     public class LifeBitService 
     {
-        CancellationTokenSource StopNotifyingTokenSource { get; private set; }
+        public CancellationTokenSource StopNotifyingTokenSource { get; private set; }
         IPlcDataAccess plcDataAccess;
         Dictionary<string, DataNode> dataNodes;
         int Interval => 1000;
