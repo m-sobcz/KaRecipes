@@ -15,12 +15,12 @@ namespace KaRecipes.BL.Interfaces
 
         Task Start();
 
-        Task<bool> WriteDataNodes(string nodeIdentifier, object value);
+        Task<bool> WriteDataNodes(List<DataNode> dataNodes);
+        Task<bool> WriteDataNode(DataNode dataNode);
 
         void Dispose();
 
         string PlcAccessPrefix { get; }
-
         Dictionary<string, string> GetAvailableNodes();
     }
 }

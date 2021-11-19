@@ -37,7 +37,7 @@ namespace KaRecipes.BL.Changeover
                     foreach (var parameter in station.ParameterSingles)
                     {
                         string path = GetNodeIdentifier(module.Name, station.Name, parameter.Name);
-                        bool writingOk = await plcDataAccess.WriteDataNodes(path, parameter.Value);
+                        bool writingOk = await plcDataAccess.WriteDataNodes(new List<DataNode>() { new DataNode() {NodeId= path, Value= parameter.Value } });
                         if (writingOk == false) OnWriteToNodeFailed(path);
                     }
                 }

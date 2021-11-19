@@ -48,15 +48,16 @@ namespace KaRecipes.BL.Changeover.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            Dictionary<string, string> executedNodes = new();
-            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<string>(), It.IsAny<object>())).Callback<string, object>((x, y) => executedNodes.Add(x,y.ToString())).ReturnsAsync(true);
+            List<DataNode> executedNodes = new();
+            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<List<DataNode>>())).Callback<List<DataNode>>(x=>executedNodes.AddRange(x)).ReturnsAsync(true);
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
 
-            Dictionary<string, string> expectedNodes = new();
-            expectedNodes.Add("KaRecipes.M01.DB_00_Parameters.single11", "11");
-            expectedNodes.Add("KaRecipes.M01.DB_00_Parameters.single12", "12");
-            expectedNodes.Add("KaRecipes.M02.DB_00_Parameters.single21", "21");
-            expectedNodes.Add("KaRecipes.M02.DB_00_Parameters.single22", "22");
+            List<DataNode> expectedNodes = new();
+
+            expectedNodes.Add(new DataNode() { NodeId= "KaRecipes.M01.DB_00_Parameters.single11",Value="11" });
+            expectedNodes.Add(new DataNode() { NodeId = "KaRecipes.M01.DB_00_Parameters.single12", Value = "12" });
+            expectedNodes.Add(new DataNode() { NodeId = "KaRecipes.M02.DB_00_Parameters.single21", Value = "21" });
+            expectedNodes.Add(new DataNode() { NodeId = "KaRecipes.M02.DB_00_Parameters.single22", Value = "22" });
 
             Recipe recipe = GetSampleRecipe();
 
@@ -76,7 +77,7 @@ namespace KaRecipes.BL.Changeover.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(false);
+            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<List<DataNode>>())).ReturnsAsync(false);
 
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
 

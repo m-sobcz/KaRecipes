@@ -14,6 +14,7 @@ using KaRecipes.BL.RecipeAggregate;
 using Opc.Ua;
 using Opc.Ua.Client;
 using Opc.Ua.Configuration;
+using static KaRecipes.DA.OPC.OpcDataConvert;
 
 namespace KaRecipes.DA.OPC
 {
@@ -34,8 +35,6 @@ namespace KaRecipes.DA.OPC
         readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
 
         public string PlcAccessPrefix => nodeIdPrefix;
-
-        public ParameterSingle ParameterSingle { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public OpcClient()
         {
@@ -64,7 +63,7 @@ namespace KaRecipes.DA.OPC
         public async Task<DataNode> ReadDataNode(string nodeIdentifier)
         {
             var readVal = await ReadDataValue(nodeIdentifier);
-            var convertedVal = DataValueToNetType(readVal);
+            var convertedVal = OpcDataConvert.DataValueToNetType(readVal);
             var name = ExtractNameFromIdentifier(nodeIdentifier);
             return new DataNode() { Name = name, Value = convertedVal, NodeId = nodeIdentifier }; 
         }
@@ -126,7 +125,10 @@ namespace KaRecipes.DA.OPC
             ClientBase.ValidateDiagnosticInfos(diagnosticInfos, valuesToWrite);
             return StatusCode.IsGood(results[0]);
         }
-
+        public async Task<bool> WriteDataNode(DataNode dataNode)
+        {
+            return await WriteDataNodes(new List<DataNode>() { dataNode });
+        }
         public Dictionary<string, string> GetAvailableNodes()
         {
             Dictionary<string, string> nodes = new();
@@ -258,102 +260,7 @@ namespace KaRecipes.DA.OPC
             GC.SuppressFinalize(this);
         }
 
-        private static object DataValueToNetType(DataValue input)
-        {
-            if (input?.WrappedValue.TypeInfo.ValueRank == -1)
-            {
-                return GetSingleObjectFromDataValue(input.Value, input.WrappedValue.TypeInfo.BuiltInType);
-            }
-            else
-            {
-                List<object> converedList = new();
-                foreach (var item in input.Value as IEnumerable)
-                {
-                    var converted = GetSingleObjectFromDataValue(item, input.WrappedValue.TypeInfo.BuiltInType);
-                    converedList.Add(converted);
-                }
-                return converedList;
-            }
-        }
-        static object GetSingleObjectFromDataValue(object input, BuiltInType opcType)
-        {
-            object converted;
-            switch (opcType)
-            {
-                case BuiltInType.Boolean:
-                    {
-                        converted = Convert.ToBoolean(input);
-                        break;
-                    }
 
-                case BuiltInType.SByte:
-                    {
-                        converted = Convert.ToSByte(input);
-                        break;
-                    }
-
-                case BuiltInType.Byte:
-                    {
-                        converted = Convert.ToByte(input);
-                        break;
-                    }
-
-                case BuiltInType.Int16:
-                    {
-                        converted = Convert.ToInt16(input);
-                        break;
-                    }
-
-                case BuiltInType.UInt16:
-                    {
-                        converted = Convert.ToUInt16(input);
-                        break;
-                    }
-
-                case BuiltInType.Int32:
-                    {
-                        converted = Convert.ToInt32(input);
-                        break;
-                    }
-
-                case BuiltInType.UInt32:
-                    {
-                        converted = Convert.ToUInt32(input);
-                        break;
-                    }
-
-                case BuiltInType.Int64:
-                    {
-                        converted = Convert.ToInt64(input);
-                        break;
-                    }
-
-                case BuiltInType.UInt64:
-                    {
-                        converted = Convert.ToUInt64(input);
-                        break;
-                    }
-
-                case BuiltInType.Float:
-                    {
-                        converted = Convert.ToSingle(input);
-                        break;
-                    }
-
-                case BuiltInType.Double:
-                    {
-                        converted = Convert.ToDouble(input);
-                        break;
-                    }
-
-                default:
-                    {
-                        converted = input;
-                        break;
-                    }
-            }
-            return converted;
-        }
 
     }
 }

@@ -28,17 +28,21 @@ namespace KaRecipes.BL.PlcRequest
             bool executed = await Execute();
             if (executed)
             {
-                await plcDataAccess.WriteDataNodes(Acknowedgle.NodeId, true);
+                Acknowedgle.Value = true;
+                await plcDataAccess.WriteDataNode(Acknowedgle);
             }
             else
             {
-                await plcDataAccess.WriteDataNodes(Error.NodeId, true);
+                Error.Value = true;
+                await plcDataAccess.WriteDataNode(Error);
             }
         }
         public async Task Stop()
         {
-            await plcDataAccess.WriteDataNodes(Acknowedgle.NodeId, false);
-            await plcDataAccess.WriteDataNodes(Error.NodeId, false);
+            Acknowedgle.Value = false;
+            await plcDataAccess.WriteDataNode(Acknowedgle);
+            Error.Value = false;
+            await plcDataAccess.WriteDataNode(Error);
         }
         public abstract Task<bool> Execute();
     }

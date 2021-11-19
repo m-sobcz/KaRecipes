@@ -21,15 +21,12 @@ namespace KaRecipes.BL.PlcRequest
         }
         public override async Task<bool> Execute()
         {
-            var dataReceived = await dbDataAccess.Read(TargetId);
+            PartData dataReceived = await dbDataAccess.Read(TargetId);
             foreach (var item in dataReceived.DataNodes)
             {
                 Data.Values.Where(x => x.Name == item.Name).FirstOrDefault().Value = item.Value;
             }
-            foreach (var item in Data.Values)
-            {
-                await plcDataAccess.WriteDataNodes(item.NodeId, item.Value);
-            }
+            await plcDataAccess.WriteDataNodes(dataReceived.DataNodes);
             return dataReceived.DataNodes.Count > 0;
         }
     }

@@ -1,4 +1,5 @@
-﻿using KaRecipes.BL.Interfaces;
+﻿using KaRecipes.BL;
+using KaRecipes.BL.Interfaces;
 using KaRecipes.DA.OPC;
 using System;
 using System.Collections.Generic;
@@ -32,7 +33,8 @@ namespace KaRecipes.Integration
             var observer = new Observer();
             client.CreateSubscriptionsWithInterval(subscriptions, 1000,observer).Wait();
             //client.OpcDataReceived += Client_opcDataReceived;
-            bool res = client.WriteDataNodes("KaRecipes.M01.OPC_UA_T.zmiena1", (short)5).Result;
+            List<DataNode> dataNodesToWrite = new() { new DataNode() { NodeId = "KaRecipes.M01.OPC_UA_T.zmiena1", Value = (short)5} };
+            bool res = client.WriteDataNodes(dataNodesToWrite).Result;
 
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();

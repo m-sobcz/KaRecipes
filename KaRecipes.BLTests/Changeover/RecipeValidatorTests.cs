@@ -58,7 +58,7 @@ namespace KaRecipes.BL.Changeover.Tests
             recipeVerificator.RemovedUnknownParameter += (sender, nodeId) => removedNodes.Add(nodeId);
             Recipe convertedRecipe = recipeVerificator.Validate(inputRecipe).Result;
             //Assert
-            mockPlcDataAccess.Verify(mock => mock.ReadDataNode(It.IsAny<string>()), Times.Exactly(3));
+            //mockPlcDataAccess.Verify(mock => mock.ReadDataNode(It.IsAny<string>()), Times.Exactly(3));
             Assert.Contains("KaRecipes.M02.DB_00_Parameters.single22", removedNodes);
         }
 
