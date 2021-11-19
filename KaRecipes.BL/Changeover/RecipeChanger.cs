@@ -55,7 +55,7 @@ namespace KaRecipes.BL.Changeover
                     foreach (var parameter in station.ParameterSingles)
                     { 
                         string path = GetNodeIdentifier(module.Name, station.Name, parameter.Name);
-                        var node = await plcDataAccess.ReadParameter(path);
+                        var node = await plcDataAccess.ReadDataNode(path);
                         parameter.Value = node.Value;
                     }
                 }

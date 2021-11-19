@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -22,6 +23,8 @@ namespace KaRecipes.DA.OPC
         readonly ushort namespaceIndex = 2;
         readonly ApplicationInstance opcApplication;
         const int ReconnectPeriod = 10;
+        readonly int discoverTimeout = 15000;
+        readonly uint sessionTimeout = 60000;
         Session session;
         SessionReconnectHandler reconnectHandler;
         readonly string nodeIdPrefix = "KaRecipes";
@@ -51,19 +54,19 @@ namespace KaRecipes.DA.OPC
             string endpointUrl = config.ServerConfiguration.BaseAddresses.First();
             config.CertificateValidator.CertificateValidation += new CertificateValidationEventHandler(CertificateValidator_CertificateValidation);
             config.ApplicationUri = X509Utils.GetApplicationUriFromCertificate(config.SecurityConfiguration.ApplicationCertificate.Certificate);
-            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, 15000);
+            var selectedEndpoint = CoreClientUtils.SelectEndpoint(endpointUrl, haveAppCertificate, discoverTimeout);
             var endpointConfiguration = EndpointConfiguration.Create(config);
             var endpoint = new ConfiguredEndpoint(null, selectedEndpoint, endpointConfiguration);
-            session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, 60000, new UserIdentity(new AnonymousIdentityToken()), null);
+            session = await Session.Create(config, endpoint, false, opcApplication.ApplicationName, sessionTimeout, new UserIdentity(new AnonymousIdentityToken()), null);
             session.KeepAlive += Client_KeepAlive;
         }
 
-        public async Task<DataNode> ReadParameter(string nodeIdentifier)
+        public async Task<DataNode> ReadDataNode(string nodeIdentifier)
         {
-            var readVal = await ReadNode(nodeIdentifier);
+            var readVal = await ReadDataValue(nodeIdentifier);
             var convertedVal = DataValueToNetType(readVal);
             var name = ExtractNameFromIdentifier(nodeIdentifier);
-            return new DataNode() { Name = name, Value = convertedVal, NodeId = nodeIdentifier }; ;
+            return new DataNode() { Name = name, Value = convertedVal, NodeId = nodeIdentifier }; 
         }
 
         string ExtractNameFromIdentifier(string nodeIdentifier)
@@ -73,7 +76,7 @@ namespace KaRecipes.DA.OPC
             return name;
         }
 
-        async Task<DataValue> ReadNode(string nodeIdentifier)
+        async Task<DataValue> ReadDataValue(string nodeIdentifier)
         {
             NodeId nodeId1 = new(nodeIdentifier, 2);
             var readVal = await Task.Run(() => session.ReadValue(nodeId1));
@@ -83,10 +86,7 @@ namespace KaRecipes.DA.OPC
         public async Task CreateSubscriptionsWithInterval(List<string> monitoredNodeIdentifiers, int publishingInterval, IObserver observer)
         {
             var subscription = new Subscription(session.DefaultSubscription) { PublishingInterval = publishingInterval };
-            var MonitoredItems = new List<MonitoredItem>
-            {
-                // new MonitoredItem(subscription.DefaultItem) { DisplayName = "ServerStatusCurrentTime", StartNodeId = "i=" + Variables.Server_ServerStatus_CurrentTime.ToString() },
-            };
+            var MonitoredItems = new List<MonitoredItem>();
             foreach (var item in monitoredNodeIdentifiers)
             {
                 var nodeId = new NodeId(item, 2);
@@ -208,7 +208,7 @@ namespace KaRecipes.DA.OPC
             session = reconnectHandler.Session;
             reconnectHandler.Dispose();
             reconnectHandler = null;
-            Console.WriteLine("--- RECONNECTED ---");
+            Trace.WriteLine("Client Reconnected");
         }
 
         private void OnNotification(MonitoredItem item, MonitoredItemNotificationEventArgs e)
@@ -259,7 +259,6 @@ namespace KaRecipes.DA.OPC
 
         private static object DataValueToNetType(DataValue input)
         {
-            var enumerableInput = input as IEnumerable;
             if (input?.WrappedValue.TypeInfo.ValueRank == -1)
             {
                 return GetSingleObjectFromDataValue(input.Value, input.WrappedValue.TypeInfo.BuiltInType);

@@ -109,7 +109,7 @@ namespace KaRecipes.BL.Changeover.Tests
         public void ReadFromPlc_ProperExecution()
         {
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            mockPlcDataAccess.Setup(x => x.ReadParameter(It.IsAny<string>())).ReturnsAsync(new ParameterSingle() { Name = "test", Value = "1" });
+            mockPlcDataAccess.Setup(x => x.ReadDataNode(It.IsAny<string>())).ReturnsAsync(new ParameterSingle() { Name = "test", Value = "1" });
             List<ParameterStation> stations1 = new();
             ParameterSingle single11 = new() { Name = "single11", Value = "1" };
             ParameterSingle single12 = new() { Name = "single12", Value = "1" };

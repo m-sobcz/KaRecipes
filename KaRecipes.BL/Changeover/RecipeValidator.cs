@@ -33,7 +33,7 @@ namespace KaRecipes.BL.Changeover
                         var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
                         if (availableNodes.TryGetValue(path, out string _))
                         {
-                            var readVal = await plcDataAccess.ReadParameter(path);
+                            var readVal = await plcDataAccess.ReadDataNode(path);
                             var newConvertedVal = Convert.ChangeType(parameter.Value, readVal.Value.GetType());
                             parameter.Value = newConvertedVal;
                         }

@@ -16,9 +16,9 @@ namespace KaRecipes.Integration
             Console.WriteLine("Create client...");
             client.Start().Wait();
             Console.WriteLine("Read val...");
-            var readVal = client.ReadParameter("KaRecipes.M01.OPC_UA_T.zmiena1").Result;
+            var readVal = client.ReadDataNode("KaRecipes.M01.OPC_UA_T.zmiena1").Result;
             Console.WriteLine(readVal.Value);
-            readVal = client.ReadParameter("KaRecipes.M01.OPC_UA_T.zmiena2").Result;
+            readVal = client.ReadDataNode("KaRecipes.M01.OPC_UA_T.zmiena2").Result;
             Console.WriteLine(readVal.Value);
             Console.WriteLine("Create node dictionaries...");
             var nodes = client.GetAvailableNodes();
