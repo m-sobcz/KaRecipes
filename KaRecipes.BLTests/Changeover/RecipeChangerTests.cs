@@ -49,7 +49,7 @@ namespace KaRecipes.BL.Changeover.Tests
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
             Dictionary<string, string> executedNodes = new();
-            mockPlcDataAccess.Setup(x => x.WriteParameter(It.IsAny<string>(), It.IsAny<object>())).Callback<string, object>((x, y) => executedNodes.Add(x,y.ToString())).ReturnsAsync(true);
+            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<string>(), It.IsAny<object>())).Callback<string, object>((x, y) => executedNodes.Add(x,y.ToString())).ReturnsAsync(true);
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
 
             Dictionary<string, string> expectedNodes = new();
@@ -76,7 +76,7 @@ namespace KaRecipes.BL.Changeover.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            mockPlcDataAccess.Setup(x => x.WriteParameter(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(false);
+            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<string>(), It.IsAny<object>())).ReturnsAsync(false);
 
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
 

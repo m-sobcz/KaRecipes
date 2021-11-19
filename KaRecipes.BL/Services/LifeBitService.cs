@@ -32,7 +32,7 @@ namespace KaRecipes.BL.Services
                 {
                     var boolVal = item.Value as bool?;
                     item.Value = boolVal.HasValue && !boolVal.Value;
-                    await plcDataAccess.WriteParameter(item.NodeId, item.Value);
+                    await plcDataAccess.WriteDataNodes(item.NodeId, item.Value);
                 }
                 await Task.Delay(Interval, cancellationToken);
             }

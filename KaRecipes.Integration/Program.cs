@@ -32,7 +32,7 @@ namespace KaRecipes.Integration
             var observer = new Observer();
             client.CreateSubscriptionsWithInterval(subscriptions, 1000,observer).Wait();
             //client.OpcDataReceived += Client_opcDataReceived;
-            bool res = client.WriteParameter("KaRecipes.M01.OPC_UA_T.zmiena1", (short)5).Result;
+            bool res = client.WriteDataNodes("KaRecipes.M01.OPC_UA_T.zmiena1", (short)5).Result;
 
             Console.WriteLine("Press any key to end...");
             Console.ReadKey();

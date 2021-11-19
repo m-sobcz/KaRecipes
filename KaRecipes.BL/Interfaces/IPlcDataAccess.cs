@@ -15,7 +15,7 @@ namespace KaRecipes.BL.Interfaces
 
         Task Start();
 
-        Task<bool> WriteParameter(string nodeIdentifier, object value);
+        Task<bool> WriteDataNodes(string nodeIdentifier, object value);
 
         void Dispose();
 

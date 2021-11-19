@@ -28,7 +28,7 @@ namespace KaRecipes.BL.PlcRequest
             }
             foreach (var item in Data.Values)
             {
-                await plcDataAccess.WriteParameter(item.NodeId, item.Value);
+                await plcDataAccess.WriteDataNodes(item.NodeId, item.Value);
             }
             return dataReceived.DataNodes.Count > 0;
         }

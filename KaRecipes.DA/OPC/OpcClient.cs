@@ -100,19 +100,20 @@ namespace KaRecipes.DA.OPC
             observers.Add(subscription.Id, observer);
         }
 
-        public async Task<bool> WriteParameter(string nodeIdentifier, object value)
+        public async Task<bool> WriteDataNodes(List<DataNode> dataNodes)
         {
-            WriteValue valueToWrite = new();
-            valueToWrite.NodeId = new NodeId(nodeIdentifier, namespaceIndex);
-            valueToWrite.AttributeId = Attributes.Value;
-            valueToWrite.Value.Value = value;
-            valueToWrite.Value.StatusCode = StatusCodes.Good;
-            valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
-            valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
-
             WriteValueCollection valuesToWrite = new WriteValueCollection();
-            valuesToWrite.Add(valueToWrite);
-
+            foreach (var node in dataNodes)
+            {
+                WriteValue valueToWrite = new();
+                valueToWrite.NodeId = new NodeId(node.NodeId, namespaceIndex);
+                valueToWrite.AttributeId = Attributes.Value;
+                valueToWrite.Value.Value = node.Value;
+                valueToWrite.Value.StatusCode = StatusCodes.Good;
+                valueToWrite.Value.ServerTimestamp = DateTime.MinValue;
+                valueToWrite.Value.SourceTimestamp = DateTime.MinValue;
+                valuesToWrite.Add(valueToWrite);
+            }        
             // write current value.
             StatusCodeCollection results = null;
             DiagnosticInfoCollection diagnosticInfos = null;
