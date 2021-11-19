@@ -17,7 +17,6 @@ namespace KaRecipes.BL.Changeover
         public int PublishingInterval => 1000;
 
         readonly IPlcDataAccess plcDataAccess;
-        public event EventHandler<string> WriteToNodeFailed;
         public event EventHandler<Recipe> ActualRecipeChanged;
         Regex regex = new(@"([^.]+)\.([^.]+)\.([^.]+)\.([^.]+)", RegexOptions.Compiled);
         public RecipeChanger(IPlcDataAccess plcDataAccess)
@@ -30,6 +29,7 @@ namespace KaRecipes.BL.Changeover
         }
         public async Task WriteToPlc(Recipe recipe)
         {
+            List<DataNode> nodesToWrite = new();
             foreach (var module in recipe.ParameterModules)
             {
                 foreach (var station in module.ParameterStations)
@@ -37,11 +37,11 @@ namespace KaRecipes.BL.Changeover
                     foreach (var parameter in station.ParameterSingles)
                     {
                         string path = GetNodeIdentifier(module.Name, station.Name, parameter.Name);
-                        bool writingOk = await plcDataAccess.WriteDataNodes(new List<DataNode>() { new DataNode() {NodeId= path, Value= parameter.Value } });
-                        if (writingOk == false) OnWriteToNodeFailed(path);
+                        nodesToWrite.Add(new DataNode() { NodeId = path, Value = parameter.Value });
                     }
                 }
             }
+            await plcDataAccess.WriteDataNodes(nodesToWrite);
             ActualRecipe = recipe;
         }
         public async Task<Recipe> ReadFromPlc()
@@ -83,10 +83,6 @@ namespace KaRecipes.BL.Changeover
             return recipe;
         }
 
-        void OnWriteToNodeFailed(string path)
-        {
-            WriteToNodeFailed?.Invoke(this, path);
-        }
         string GetNodeIdentifier(string module, string station, string parameter)
         {
             string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{station}.{parameter}";

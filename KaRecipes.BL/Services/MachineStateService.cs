@@ -29,8 +29,14 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            machineStates.TryGetValue(subject.Name, out MachineState machineState);
-            dbDataAccess.Write(machineState);
+            if (machineStates.TryGetValue(subject.Name, out MachineState machineState))
+            {
+                dbDataAccess.Write(machineState);
+            }
+            else
+            {
+                Traceability.Notify(subject);
+            }
         }
 
     }

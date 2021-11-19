@@ -30,10 +30,16 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            Alarms.TryGetValue(subject.Name, out Alarm alarm);
-            bool valueChanged = alarm.Value != subject.Value;      
-            alarm.Value = subject.Value;
-            if (valueChanged) dbDataAccess.Write(alarm);
+            if (Alarms.TryGetValue(subject.Name, out Alarm alarm))
+            {
+                bool valueChanged = alarm.Value != subject.Value;
+                alarm.Value = subject.Value;
+                if (valueChanged) dbDataAccess.Write(alarm);
+            }
+            else
+            {
+                Traceability.Notify(subject);
+            }
         }
     }
 }

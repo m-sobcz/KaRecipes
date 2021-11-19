@@ -22,11 +22,11 @@ namespace KaRecipes.BL.Services
         public Recipe ActualRecipe => recipeChanger.ActualRecipe;
 
         public RecipeService(IRecipeChanger recipeChanger, IRecipeValidator recipeValidator,
-            IRawRecipeSerializer recipeSerialzier, IDbDataAccess<Recipe> dbDataAccess)
+            IRawRecipeSerializer recipeSerializer, IDbDataAccess<Recipe> dbDataAccess)
         {
             this.recipeChanger = recipeChanger;
             this.recipeValidator = recipeValidator;
-            this.recipeSerializer = recipeSerialzier;
+            this.recipeSerializer = recipeSerializer;
             this.dbDataAccess = dbDataAccess;
             recipeChanger.ActualRecipeChanged += RecipeChanger_ActualRecipeChanged;
         }

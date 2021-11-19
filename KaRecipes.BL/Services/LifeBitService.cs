@@ -12,28 +12,32 @@ namespace KaRecipes.BL.Services
     {
         public CancellationTokenSource StopNotifyingTokenSource { get; private set; }
         IPlcDataAccess plcDataAccess;
-        Dictionary<string, DataNode> dataNodes;
+        List<DataNode> dataNodes;
         int Interval => 1000;
         public LifeBitService(IPlcDataAccess plcDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public void Start(Dictionary<string,DataNode> dataNodes) 
+        public void Start(List<DataNode> dataNodes) 
         {
             this.dataNodes = dataNodes;
             StopNotifyingTokenSource = new();
             Task.Run(() => Notify(StopNotifyingTokenSource.Token));
         }
+        public void Stop() 
+        {
+            StopNotifyingTokenSource.Cancel();
+        }
         async Task Notify(CancellationToken cancellationToken) 
         {
             while (cancellationToken.IsCancellationRequested == false) 
             {
-                foreach (var item in dataNodes.Values)
+                foreach (var item in dataNodes)
                 {
                     var boolVal = item.Value as bool?;
                     item.Value = boolVal.HasValue && !boolVal.Value;
-                    await plcDataAccess.WriteDataNode(item);
                 }
+                await plcDataAccess.WriteDataNodes(dataNodes);
                 await Task.Delay(Interval, cancellationToken);
             }
         }
