@@ -39,7 +39,8 @@ namespace KaRecipes.BL.Services
             }
             else
             {
-                Traceability.Notify(subject);
+                throw new ArgumentException("Received unknown subject name: " + subject.Name);
+                //Traceability.Notify(subject);
             }
         }
     }

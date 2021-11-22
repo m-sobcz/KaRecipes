@@ -23,7 +23,7 @@ namespace KaRecipes.BL.PlcRequest
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public async Task Start()
+        public async Task ExecuteStart()
         {
             bool executed = await Execute();
             if (executed)
@@ -37,7 +37,7 @@ namespace KaRecipes.BL.PlcRequest
                 await plcDataAccess.WriteDataNode(Error);
             }
         }
-        public async Task Stop()
+        public async Task ExecuteStop()
         {
             Acknowedgle.Value = false;
             await plcDataAccess.WriteDataNode(Acknowedgle);

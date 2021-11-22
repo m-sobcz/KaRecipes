@@ -44,21 +44,27 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            dataNodes.TryGetValue(subject.Name, out RequestData dataNode);
+            if (dataNodes.TryGetValue(subject.Name, out RequestData dataNode) == false)
+            {
+                throw new ArgumentException("Received unknown subject name: " + subject.Name);
+            }      
             if (commands.TryGetValue(subject.Name, out RequestData commandNode))
             {
-                commandNode.ParentRequest.Command = commandNode;
-                if (subject.Value.Equals(true) && dataNode.Value!=subject.Value)
-                {
-                    commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
-                    commandNode.ParentRequest.Start();
-                }
-                if (subject.Value.Equals(false) && dataNode.Value != subject.Value)
-                {
-                    commandNode.ParentRequest.Stop();
-                }
+                HandleCommand(commandNode, subject.Value as bool?, dataNode.Value as bool?);
             }
             dataNode.Value = subject.Value;
+        }
+        void HandleCommand(RequestData commandNode, bool? actual, bool? previous) 
+        {
+            if (actual==true &&actual!=previous)
+            {
+                //commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
+                commandNode.ParentRequest.ExecuteStart();
+            }
+            if (actual == false && actual != previous)
+            {
+                commandNode.ParentRequest.ExecuteStop();
+            }
         }
     }
 }

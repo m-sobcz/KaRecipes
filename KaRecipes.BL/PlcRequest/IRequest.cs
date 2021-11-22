@@ -13,7 +13,7 @@ namespace KaRecipes.BL.PlcRequest
         RequestData TargetId { get; set; }
         RequestData Error { get; set; }
 
-        Task Start();
-        Task Stop();
+        Task ExecuteStart();
+        Task ExecuteStop();
     }
 }

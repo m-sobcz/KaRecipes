@@ -29,14 +29,11 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            if (machineStates.TryGetValue(subject.Name, out MachineState machineState))
+            if (machineStates.TryGetValue(subject.Name, out MachineState machineState)== false)
             {
-                dbDataAccess.Write(machineState);
+                throw new ArgumentException("Received unknown subject name: " + subject.Name);
             }
-            else
-            {
-                Traceability.Notify(subject);
-            }
+            dbDataAccess.Write(machineState);
         }
 
     }
