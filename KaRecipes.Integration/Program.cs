@@ -22,7 +22,7 @@ namespace KaRecipes.Integration
             readVal = client.ReadDataNode("KaRecipes.M01.OPC_UA_T.zmiena2").Result;
             Console.WriteLine(readVal.Value);
             Console.WriteLine("Create node dictionaries...");
-            var nodes = client.GetAvailableNodes();
+            //var nodes = client.GetAvailableNodes().Result;
             Console.WriteLine("Create subscriptions...");
             List<string> subscriptions = new()
             {
@@ -33,7 +33,11 @@ namespace KaRecipes.Integration
             var observer = new Observer();
             client.CreateSubscriptionsWithInterval(subscriptions, 1000,observer).Wait();
             //client.OpcDataReceived += Client_opcDataReceived;
-            List<DataNode> dataNodesToWrite = new() { new DataNode() { NodeId = "KaRecipes.M01.OPC_UA_T.zmiena1", Value = (short)5} };
+            List<DataNode> dataNodesToWrite = new() 
+            { 
+                new DataNode() { NodeId = "KaRecipes.M01.OPC_UA_T.zmiena1", Value = (short)1000},
+                new DataNode() { NodeId = "KaRecipes.M01.OPC_UA_T.zmiena2", Value = false },
+            };
             bool res = client.WriteDataNodes(dataNodesToWrite).Result;
 
             Console.WriteLine("Press any key to end...");

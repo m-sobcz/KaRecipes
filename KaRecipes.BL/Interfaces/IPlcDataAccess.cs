@@ -21,6 +21,6 @@ namespace KaRecipes.BL.Interfaces
         void Dispose();
 
         string PlcAccessPrefix { get; }
-        Dictionary<string, string> GetAvailableNodes();
+        Task<Dictionary<string, string>> GetAvailableNodes();
     }
 }

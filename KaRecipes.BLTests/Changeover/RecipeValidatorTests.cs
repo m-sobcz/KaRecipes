@@ -25,7 +25,7 @@ namespace KaRecipes.BL.Changeover.Tests
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single12", "single12");
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single21", "single21");
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single22", "single22");
-            mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(nodes);
+            mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(Task.FromResult(nodes));
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
             mockPlcDataAccess.Setup(x => x.ReadDataNode(It.IsAny<string>())).Returns(Task.FromResult(new DataNode() {Value="101"}));
             RecipeValidator recipeVerificator = new(mockPlcDataAccess.Object);
@@ -48,7 +48,7 @@ namespace KaRecipes.BL.Changeover.Tests
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single11", "single11");
             nodes.Add("KaRecipes.M01.DB_00_Parameters.single12", "single12");
             nodes.Add("KaRecipes.M02.DB_00_Parameters.single21", "single21");
-            mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(nodes);
+            mockPlcDataAccess.Setup(x => x.GetAvailableNodes()).Returns(Task.FromResult(nodes));
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
             mockPlcDataAccess.Setup(x => x.ReadDataNode(It.IsAny<string>())).Returns(Task.FromResult(new DataNode() { Value = "101" }));
             RecipeValidator recipeVerificator = new(mockPlcDataAccess.Object);

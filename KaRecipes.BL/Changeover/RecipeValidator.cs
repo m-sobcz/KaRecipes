@@ -23,7 +23,7 @@ namespace KaRecipes.BL.Changeover
         public async Task<Recipe> Validate(RawRecipe sourceRecipe)
         {
             Recipe converted = new() { ParameterModules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
-            Dictionary<string, string> availableNodes = plcDataAccess.GetAvailableNodes();
+            Dictionary<string, string> availableNodes = await plcDataAccess.GetAvailableNodes();
             foreach (var module in converted.ParameterModules)
             {
                 foreach (var station in module.ParameterStations)

@@ -31,6 +31,7 @@ namespace KaRecipes.DA.OPC
         readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
         Dictionary<uint, IObserver> observers = new();
+        public Dictionary<string, string> AvailableNodes;
 
         readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
 
@@ -129,26 +130,19 @@ namespace KaRecipes.DA.OPC
         {
             return await WriteDataNodes(new List<DataNode>() { dataNode });
         }
-        public Dictionary<string, string> GetAvailableNodes()
+        public async Task<Dictionary<string, string>> GetAvailableNodes()
         {
-            Dictionary<string, string> nodes = new();
-            session.Browse(
-                null,
-                null,
-                new NodeId(nodeIdPrefix, namespaceIndex),
-                0u,
-                BrowseDirection.Forward,
-                ReferenceTypeIds.HierarchicalReferences,
-                true,
-                (uint)NodeClass.Object,
-                out _,
-                out ReferenceDescriptionCollection moduleRefs);
-            foreach (var moduleRef in moduleRefs)
-            {
+            AvailableNodes = new();
+            var root = new NodeId(nodeIdPrefix, namespaceIndex);
+            await Task.Run(()=>DeepBrowseNode(root));     
+            return AvailableNodes;
+        }
+        public void DeepBrowseNode(NodeId nodeToBrowse) 
+        {
                 session.Browse(
                     null,
                     null,
-                    ExpandedNodeId.ToNodeId(moduleRef.NodeId, session.NamespaceUris),
+                    nodeToBrowse,
                     0u,
                     BrowseDirection.Forward,
                     ReferenceTypeIds.HierarchicalReferences,
@@ -156,35 +150,15 @@ namespace KaRecipes.DA.OPC
                     (uint)NodeClass.Variable | (uint)NodeClass.Object | (uint)NodeClass.Method,
                     out byte[] nextCp,
                     out ReferenceDescriptionCollection stationRefs);
-
                 foreach (var stationRef in stationRefs)
-                {
-                    if (stationRef.DisplayName.ToString().StartsWith("_") == false)
+                {                    
+                    if (stationRef.DisplayName.Text.StartsWith("_") == false)
                     {
-                        session.Browse(
-                        null,
-                        null,
-                        ExpandedNodeId.ToNodeId(stationRef.NodeId, session.NamespaceUris),
-                        0u,
-                        BrowseDirection.Forward,
-                        ReferenceTypeIds.HierarchicalReferences,
-                        true,
-                        (uint)NodeClass.Variable,
-                        out byte[] next2Cp,
-                        out ReferenceDescriptionCollection parameterRefs);
-
-                        foreach (var parameterRef in parameterRefs)
-                        {
-                            if (parameterRef.DisplayName.ToString().StartsWith("_") == false)
-                            {
-                                nodes.Add(parameterRef.NodeId.Identifier.ToString(), parameterRef.DisplayName.ToString());
-                            }
-                        }
+                        AvailableNodes.Add(stationRef.NodeId.Identifier.ToString(), stationRef.DisplayName.ToString());
+                        var nodeId = ExpandedNodeId.ToNodeId(stationRef.NodeId, session.NamespaceUris);
+                        DeepBrowseNode(nodeId);
                     }
                 }
-
-            }
-            return nodes;
         }
 
         private void Client_KeepAlive(Session sender, KeepAliveEventArgs e)

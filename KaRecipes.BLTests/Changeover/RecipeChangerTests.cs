@@ -63,11 +63,9 @@ namespace KaRecipes.BL.Changeover.Tests
 
             //Act
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
-            HashSet<string> actualFailedNodes = new();
-            recipeChanger.WriteToNodeFailed += (sender, nodeId) => actualFailedNodes.Add(nodeId);
+
             recipeChanger.WriteToPlc(recipe).Wait();
             //Assert
-            Assert.Empty(actualFailedNodes);
             CompareLogic compareLogic = new();
             var comparison = compareLogic.Compare(expectedNodes, executedNodes);
             Assert.True(comparison.AreEqual);
@@ -92,7 +90,6 @@ namespace KaRecipes.BL.Changeover.Tests
             //Act
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
             HashSet<string> actualFailedNodes = new();
-            recipeChanger.WriteToNodeFailed += (sender, nodeId) => actualFailedNodes.Add(nodeId);
             recipeChanger.WriteToPlc(recipe).Wait();
             //Assert
             CompareLogic compareLogic = new();
