@@ -32,7 +32,8 @@ namespace KaRecipes.BL.Services
         {
             if (Alarms.TryGetValue(subject.Name, out Alarm alarm))
             {
-                bool valueChanged = alarm.Value != subject.Value;
+                var comparableAlarm = alarm.Value as IComparable;
+                bool valueChanged = comparableAlarm?.CompareTo(subject.Value)!=0;
                 alarm.Value = subject.Value;
                 if (valueChanged) dbDataAccess.Write(alarm);
             }
