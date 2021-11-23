@@ -9,6 +9,6 @@ namespace KaRecipes.BL.PlcRequest
 {
     public class RequestData : DataNode
     {
-        public IRequest ParentRequest { get; }
+        public IRequest ParentRequest { get; set; }
     }
 }

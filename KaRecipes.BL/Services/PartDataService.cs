@@ -18,25 +18,24 @@ namespace KaRecipes.BL.Services
         IPlcDataAccess plcDataAccess;
         public int PublishingInterval => 1000;
 
-        public PartDataService(IPlcDataAccess plcDataAccess, Dictionary<string, IRequest> requests)
+        public PartDataService(IPlcDataAccess plcDataAccess)
         {
-            this.requests = requests;
             this.plcDataAccess = plcDataAccess;
         }
 
-        public void Start()
+        public void Start(List<IRequest> requests)
         {
             dataNodes = new();
             commands = new();
             foreach (var item in requests)
             {
-                foreach (var readData in item.Value.Data)
+                foreach (var readData in item.Data)
                 {
                     dataNodes.Add(readData.Key, readData.Value);
                 }
-                dataNodes.TryAdd(item.Value.TargetId.NodeId, item.Value.TargetId);
-                dataNodes.Add(item.Value.Command.NodeId, item.Value.Command);
-                commands.Add(item.Value.Command.NodeId, item.Value.Command);
+                dataNodes.TryAdd(item.PartId.NodeId, item.PartId);
+                dataNodes.Add(item.Command.NodeId, item.Command);
+                commands.Add(item.Command.NodeId, item.Command);
             }
             List<string> monitoredNodeIdentifiers = dataNodes.Keys.ToList();
             plcDataAccess.CreateSubscriptionsWithInterval(monitoredNodeIdentifiers, PublishingInterval, this);
@@ -56,7 +55,7 @@ namespace KaRecipes.BL.Services
         }
         void HandleCommand(RequestData commandNode, bool? actual, bool? previous) 
         {
-            if (actual==true &&actual!=previous)
+            if (actual==true && actual!=previous)
             {
                 //commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
                 commandNode.ParentRequest.ExecuteStart();

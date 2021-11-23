@@ -16,7 +16,7 @@ namespace KaRecipes.BL.PlcRequest
         public RequestData Command { get; set; }
         public RequestData Acknowedgle { get; set; }
         public RequestData Error { get; set; }
-        public RequestData TargetId { get; set; }
+        public RequestData PartId { get; set; }
 
         protected IPlcDataAccess plcDataAccess;
         public Request(IPlcDataAccess plcDataAccess)

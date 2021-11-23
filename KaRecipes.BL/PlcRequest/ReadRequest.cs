@@ -21,7 +21,7 @@ namespace KaRecipes.BL.PlcRequest
         }
         public override async Task<bool> Execute()
         {
-            PartData dataReceived = await dbDataAccess.Read(TargetId);
+            PartData dataReceived = await dbDataAccess.Read(PartId);
             foreach (var item in dataReceived.DataNodes)
             {
                 Data.Values.Where(x => x.Name == item.Name).FirstOrDefault().Value = item.Value;
