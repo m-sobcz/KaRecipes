@@ -1,11 +1,11 @@
-﻿using KaRecipes.BL.PlcRequest;
+﻿using KaRecipes.BL.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PlcRequest
+namespace KaRecipes.BL.Part
 {
     public class RequestData : DataNode
     {

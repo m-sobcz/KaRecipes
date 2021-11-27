@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PartAggregate
+namespace KaRecipes.BL.Data.PartAggregate
 {
     public class PartData
     {

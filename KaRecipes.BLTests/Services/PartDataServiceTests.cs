@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
 using Moq;
-using KaRecipes.BL.PlcRequest;
+using KaRecipes.BL.Part;
 
 namespace KaRecipes.BL.Services.Tests
 {
@@ -26,7 +26,7 @@ namespace KaRecipes.BL.Services.Tests
             data.Add("KaRecipes.M01.DB_00_Parameters.single1", new RequestData() { });
             data.Add("KaRecipes.M01.DB_00_Parameters.single2", new RequestData() { });
             mockRequest.SetupGet(x => x.Data).Returns(()=>data);
-            PartDataService partDataService = new(mockPlcDataAccess.Object);
+            PartService partDataService = new(mockPlcDataAccess.Object);
             List<IRequest> requests = new();
             requests.Add(mockRequest.Object);
 

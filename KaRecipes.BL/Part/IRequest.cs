@@ -1,9 +1,8 @@
-﻿using KaRecipes.BL.PlcRequest;
-using System.Collections.Concurrent;
+﻿ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PlcRequest
+namespace KaRecipes.BL.Part
 {
     public interface IRequest
     {

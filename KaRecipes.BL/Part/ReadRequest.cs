@@ -1,12 +1,12 @@
-﻿using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.PartAggregate;
+﻿using KaRecipes.BL.Data.PartAggregate;
+using KaRecipes.BL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PlcRequest
+namespace KaRecipes.BL.Part
 {
     class ReadRequest : Request
     {

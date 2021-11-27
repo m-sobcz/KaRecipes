@@ -1,7 +1,6 @@
 ﻿using DeepCopy;
+using KaRecipes.BL.Data.RecipeAggregate;
 using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.RecipeAggregate;
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.Changeover
+namespace KaRecipes.BL.Recipe
 {
     public class RecipeValidator : IRecipeValidator
     {
@@ -20,15 +19,15 @@ namespace KaRecipes.BL.Changeover
         {
             this.plcDataAccess = plcDataAccess;
         }
-        public async Task<Recipe> Validate(RawRecipe sourceRecipe)
+        public async Task<RecipeData> Validate(RawRecipe sourceRecipe)
         {
-            Recipe converted = new() { ParameterModules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
+            RecipeData converted = new() { Modules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
             Dictionary<string, string> availableNodes = await plcDataAccess.GetAvailableNodes();
-            foreach (var module in converted.ParameterModules)
+            foreach (var module in converted.Modules)
             {
-                foreach (var station in module.ParameterStations)
+                foreach (var station in module.Stations)
                 {
-                    foreach (var parameter in station.ParameterSingles.ToList())
+                    foreach (var parameter in station.Params.ToList())
                     {
                         var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
                         if (availableNodes.TryGetValue(path, out string _))
@@ -39,7 +38,7 @@ namespace KaRecipes.BL.Changeover
                         }
                         else
                         {
-                            station.ParameterSingles.Remove(parameter);
+                            station.Params.Remove(parameter);
                             OnRemovedUnknownParameter(path);
                         }
                     }

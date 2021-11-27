@@ -4,11 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.RecipeAggregate
+namespace KaRecipes.BL.Data
 {
-    public class ParameterModule
+    public class DataNode
     {
-        public List<ParameterStation> ParameterStations { get; set; } = new();
         public string Name { get; set; }
+        public string NodeId { get; set; }
+        public object Value { get; set; }
     }
 }

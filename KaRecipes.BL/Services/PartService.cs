@@ -1,5 +1,5 @@
 ﻿using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.PlcRequest;
+using KaRecipes.BL.Part;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,15 +10,14 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Services
 {
-    public class PartDataService : IObserver
+    public class PartService : IObserver
     {
-        Dictionary<string, IRequest> requests;
         Dictionary<string, RequestData> dataNodes;
         Dictionary<string, RequestData> commands;
         IPlcDataAccess plcDataAccess;
         public int PublishingInterval => 1000;
 
-        public PartDataService(IPlcDataAccess plcDataAccess)
+        public PartService(IPlcDataAccess plcDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
         }

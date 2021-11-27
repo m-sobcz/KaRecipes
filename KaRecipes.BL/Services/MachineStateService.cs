@@ -1,5 +1,5 @@
-﻿using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.MachineStateAggregate;
+﻿using KaRecipes.BL.Data.MachineStateAggregate;
+using KaRecipes.BL.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,17 +10,17 @@ namespace KaRecipes.BL.Services
 {
     public class MachineStateService : IObserver
     {
-        Dictionary<string, MachineState> machineStates;
+        Dictionary<string, MachineStateData> machineStates;
         IPlcDataAccess plcDataAccess;
-        IDbDataAccess<MachineState> dbDataAccess;
-        public MachineStateService(IPlcDataAccess plcDataAccess, IDbDataAccess<MachineState> dbDataAccess)
+        IDbDataAccess<MachineStateData> dbDataAccess;
+        public MachineStateService(IPlcDataAccess plcDataAccess, IDbDataAccess<MachineStateData> dbDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
             this.dbDataAccess = dbDataAccess;
         }
 
         public int PublishingInterval => 5000;
-        public void Start(Dictionary<string, MachineState> machineStates)
+        public void Start(Dictionary<string, MachineStateData> machineStates)
         {
             this.machineStates = machineStates;
             List<string> keys = machineStates.Keys.ToList();
@@ -29,7 +29,7 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            if (machineStates.TryGetValue(subject.Name, out MachineState machineState)== false)
+            if (machineStates.TryGetValue(subject.Name, out MachineStateData machineState)== false)
             {
                 throw new ArgumentException("Received unknown subject name: " + subject.Name);
             }

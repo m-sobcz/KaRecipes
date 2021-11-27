@@ -1,5 +1,5 @@
-﻿using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Serialize;
+﻿using KaRecipes.BL.Data.RecipeAggregate;
+using KaRecipes.BL.Recipe;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,7 +14,7 @@ namespace KaRecipes.UI.ViewModels
     {
         public string OpenedFileName { get; set; }
         public string OpenedFileContent { get; set; }
-        public ObservableCollection<ParameterModule> ParameterModules { get; set; }
+        public ObservableCollection<ModuleData> Modules { get; set; }
         ICommand openFileCommand;
         public event OpenFileEventHandler OpenFile;
         public delegate (string,string) OpenFileEventHandler(object sender);
@@ -36,8 +36,8 @@ namespace KaRecipes.UI.ViewModels
                             var result =OpenFile?.Invoke(this);
                             (OpenedFileName, OpenedFileContent) = result.Value;
                             RawRecipe recipe=recipeSerializer.Deserialize(OpenedFileContent);
-                            ParameterModules = new(recipe.ParameterModules);
-                            OnPropertyChanged(nameof(ParameterModules));
+                            Modules = new(recipe.ParameterModules);
+                            OnPropertyChanged(nameof(Modules));
                             recipeSerializer.FillRecipeWithHeaderInfo(recipe, OpenedFileName);
                             OnPropertyChanged(nameof(OpenedFileName));
                         },

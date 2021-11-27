@@ -1,7 +1,6 @@
-﻿using KaRecipes.BL.Changeover;
+﻿using KaRecipes.BL.Data.RecipeAggregate;
 using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Serialize;
+using KaRecipes.BL.Recipe;
 using KellermanSoftware.CompareNetObjects;
 using System;
 using System.Collections.Generic;
@@ -15,14 +14,14 @@ namespace KaRecipes.BL.Services
     {
         IRecipeChanger recipeChanger;
         IRecipeValidator recipeValidator;
-        IDbDataAccess<Recipe> dbDataAccess;
+        IDbDataAccess<RecipeData> dbDataAccess;
         IRawRecipeSerializer recipeSerializer;
-        Recipe fileRecipe;
+        RecipeData fileRecipe;
 
-        public Recipe ActualRecipe => recipeChanger.ActualRecipe;
+        public RecipeData ActualRecipe => recipeChanger.ActualRecipe;
 
         public RecipeService(IRecipeChanger recipeChanger, IRecipeValidator recipeValidator,
-            IRawRecipeSerializer recipeSerializer, IDbDataAccess<Recipe> dbDataAccess)
+            IRawRecipeSerializer recipeSerializer, IDbDataAccess<RecipeData> dbDataAccess)
         {
             this.recipeChanger = recipeChanger;
             this.recipeValidator = recipeValidator;
@@ -31,19 +30,19 @@ namespace KaRecipes.BL.Services
             recipeChanger.ActualRecipeChanged += RecipeChanger_ActualRecipeChanged;
         }
 
-        private void RecipeChanger_ActualRecipeChanged(object sender, Recipe e)
+        private void RecipeChanger_ActualRecipeChanged(object sender, RecipeData e)
         {
             throw new NotImplementedException();
             //Task.Run(()=>dbDataAccess.Write(recipeChanger.ActualRecipe));
         }
 
-        async Task<Recipe> Deserialize(string serialized) 
+        async Task<RecipeData> Deserialize(string serialized) 
         {
             RawRecipe rawRecipe =recipeSerializer.Deserialize(serialized);
             fileRecipe = await recipeValidator.Validate(rawRecipe);
             return fileRecipe;
         }
-        async Task Load (Recipe recipe) 
+        async Task Load (RecipeData recipe) 
         {
             recipeChanger.Initialize(recipe);
             await recipeChanger.WriteToPlc(recipe);

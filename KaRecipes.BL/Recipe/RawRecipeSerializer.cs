@@ -1,4 +1,4 @@
-﻿using KaRecipes.BL.RecipeAggregate;
+﻿using KaRecipes.BL.Data.RecipeAggregate;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace KaRecipes.BL.Serialize
+namespace KaRecipes.BL.Recipe
 {
     public class RawRecipeSerializer : IRawRecipeSerializer
     {
@@ -25,27 +25,27 @@ namespace KaRecipes.BL.Serialize
             RawRecipe recipe = new();
             foreach (var loadedModule in loadedModules)
             {
-                ParameterModule newParameterModule = LoadParameterModule(loadedModule);
+                ModuleData newParameterModule = LoadParameterModule(loadedModule);
                 recipe.ParameterModules.Add(newParameterModule);
             }
             return recipe;
         }
-        ParameterModule LoadParameterModule(XElement loadedModule)
+        ModuleData LoadParameterModule(XElement loadedModule)
         {
-            ParameterModule newParameterModule = new()
+            ModuleData newParameterModule = new()
             {
                 Name = loadedModule.Attribute(groupNameAttribute).Value
             };
             foreach (var loadedStation in loadedModule.Elements())
             {
-                ParameterStation newParameterStation = LoadParameterStation(loadedStation);
-                newParameterModule.ParameterStations.Add(newParameterStation);
+                StationData newParameterStation = LoadParameterStation(loadedStation);
+                newParameterModule.Stations.Add(newParameterStation);
             }
             return newParameterModule;
         }
-        ParameterStation LoadParameterStation(XElement loadedStation)
+        StationData LoadParameterStation(XElement loadedStation)
         {
-            ParameterStation newParameterStation = new()
+            StationData newParameterStation = new()
             {
                 Name = loadedStation.Attribute(groupNameAttribute).Value
             };
@@ -53,8 +53,8 @@ namespace KaRecipes.BL.Serialize
             {
                 var name = loadedParameter.Attribute(parameterNameAttribute).Value;
                 var value = loadedParameter.Attribute(parameterValueAttribute).Value;
-                ParameterSingle newParameterSingle = new() { Name = name, Value = value };
-                newParameterStation.ParameterSingles.Add(newParameterSingle);
+                SingleParamData newParameterSingle = new() { Name = name, Value = value };
+                newParameterStation.Params.Add(newParameterSingle);
             }
             return newParameterStation;
         }
@@ -71,19 +71,19 @@ namespace KaRecipes.BL.Serialize
                 }
             }
         }
-        public string Serialize(Recipe recipe)
+        public string Serialize(RecipeData recipe)
         {
             XElement xParameterGroups = new("ParameterGroups");
-            foreach (var module in recipe.ParameterModules)
+            foreach (var module in recipe.Modules)
             {
                 XElement xModule = new("ParameterGroup");
                 xModule.SetAttributeValue("name", module.Name);
-                foreach (var station in module.ParameterStations)
+                foreach (var station in module.Stations)
                 {
                     XElement xStation = new("ParameterGroup");
                     station.Name = module.Name + "_" + station.Name;
                     xStation.SetAttributeValue("name", station.Name);
-                    foreach (var singleParam in station.ParameterSingles)
+                    foreach (var singleParam in station.Params)
                     {
                         XElement xSingleParam = new("Parameter");
                         xSingleParam.SetAttributeValue("name", singleParam.Name);

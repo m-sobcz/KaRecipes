@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.RecipeAggregate
+namespace KaRecipes.BL.Data.RecipeAggregate
 {
-    public class ParameterSingle : DataNode
+    public class SingleParamData : DataNode
     {
 
     }

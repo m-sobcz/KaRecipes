@@ -9,8 +9,9 @@ using System.Xml.Linq;
 using System.Xml;
 using System.Diagnostics;
 using KellermanSoftware.CompareNetObjects;
-using KaRecipes.BL.RecipeAggregate;
-using KaRecipes.BL.Serialize;
+
+using KaRecipes.BL.Recipe;
+using KaRecipes.BL.Data.RecipeAggregate;
 
 namespace KaRecipes.BL.Recipes.Tests
 {
@@ -38,36 +39,36 @@ namespace KaRecipes.BL.Recipes.Tests
             RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
             var expected = new RawRecipe() {
-                ParameterModules = new List<ParameterModule>
+                ParameterModules = new List<ModuleData>
             {
-                new ParameterModule()
+                new ModuleData()
                 {
                    Name="M11",
-                   ParameterStations=new List<ParameterStation>()
+                   Stations=new List<StationData>()
                    {
-                       new ParameterStation()
+                       new StationData()
                        {
                            Name="M11_DB_00_Parameters",
-                           ParameterSingles=new List<ParameterSingle>()
+                           Params=new List<SingleParamData>()
                            {
-                               new ParameterSingle()
+                               new SingleParamData()
                                {
                                    Name="ActualType",
                                    Value="0"
                                },
-                               new ParameterSingle()
+                               new SingleParamData()
                                {
                                    Name="MachineCycleTime",
                                    Value="4500"
                                }
                            }
                        },
-                       new ParameterStation()
+                       new StationData()
                        {
                            Name="M11_DB_01_Param",
-                           ParameterSingles=new List<ParameterSingle>()
+                           Params=new List<SingleParamData>()
                            {
-                               new ParameterSingle()
+                               new SingleParamData()
                                {
                                    Name="LR_LR_aktiv",
                                    Value="False"
@@ -76,10 +77,10 @@ namespace KaRecipes.BL.Recipes.Tests
                        }
                    }
                 },
-                new ParameterModule()
+                new ModuleData()
                 {
                    Name="M15",
-                   ParameterStations=new List<ParameterStation>()
+                   Stations=new List<StationData>()
                 }
             }
             };
@@ -102,26 +103,26 @@ namespace KaRecipes.BL.Recipes.Tests
         [Fact()]
         public void Serialize_SampleData()
         {
-            List<ParameterStation> stations1 = new();
-            ParameterSingle single11 = new() { Name = "single11", Value = "11" };
-            ParameterSingle single12 = new() { Name = "single12", Value = "12" };
-            List<ParameterSingle> singles1 = new();
+            List<StationData> stations1 = new();
+            SingleParamData single11 = new() { Name = "single11", Value = "11" };
+            SingleParamData single12 = new() { Name = "single12", Value = "12" };
+            List<SingleParamData> singles1 = new();
             singles1.Add(single11);
             singles1.Add(single12);
-            stations1.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles1 });
+            stations1.Add(new() { Name = "DB_00_Parameters", Params = singles1 });
 
-            List<ParameterStation> stations2 = new();
-            ParameterSingle single21 = new() { Name = "single21", Value = "21" };
-            ParameterSingle single22 = new() { Name = "single22", Value = "22" };
-            List<ParameterSingle> singles2 = new();
+            List<StationData> stations2 = new();
+            SingleParamData single21 = new() { Name = "single21", Value = "21" };
+            SingleParamData single22 = new() { Name = "single22", Value = "22" };
+            List<SingleParamData> singles2 = new();
             singles2.Add(single21);
             singles2.Add(single22);
-            stations2.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles2 });
+            stations2.Add(new() { Name = "DB_00_Parameters", Params = singles2 });
 
-            Recipe recipe = new();
-            recipe.ParameterModules = new();
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
+            RecipeData recipe = new();
+            recipe.Modules = new();
+            recipe.Modules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
+            recipe.Modules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
 
             RawRecipeSerializer recipeSerializer = new();
             string actual = recipeSerializer.Serialize(recipe);

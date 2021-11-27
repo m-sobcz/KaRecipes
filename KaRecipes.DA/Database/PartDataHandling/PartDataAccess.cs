@@ -1,5 +1,5 @@
-﻿using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.PartAggregate;
+﻿using KaRecipes.BL.Data.PartAggregate;
+using KaRecipes.BL.Interfaces;
 using KaRecipes.DA.Database.DataAccess;
 using System;
 using System.Collections.Generic;

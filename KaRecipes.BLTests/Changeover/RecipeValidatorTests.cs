@@ -7,7 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Moq;
 using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.RecipeAggregate;
+using KaRecipes.BL.Recipe;
+using KaRecipes.BL.Data.RecipeAggregate;
+using KaRecipes.BL.Data;
 
 namespace KaRecipes.BL.Changeover.Tests
 {
@@ -33,7 +35,7 @@ namespace KaRecipes.BL.Changeover.Tests
             //Act
             HashSet<string> reportedNodes = new();
             recipeVerificator.RemovedUnknownParameter += (sender, nodeId) => reportedNodes.Add(nodeId);
-            Recipe convertedRecipe=recipeVerificator.Validate(inputRecipe).Result;
+            RecipeData convertedRecipe=recipeVerificator.Validate(inputRecipe).Result;
             //Assert
             mockPlcDataAccess.Verify(mock => mock.ReadDataNode(It.IsAny<string>()), Times.Exactly(4));
             Assert.Empty(reportedNodes);
@@ -56,7 +58,7 @@ namespace KaRecipes.BL.Changeover.Tests
             //Act
             HashSet<string> removedNodes = new();
             recipeVerificator.RemovedUnknownParameter += (sender, nodeId) => removedNodes.Add(nodeId);
-            Recipe convertedRecipe = recipeVerificator.Validate(inputRecipe).Result;
+            RecipeData convertedRecipe = recipeVerificator.Validate(inputRecipe).Result;
             //Assert
             //mockPlcDataAccess.Verify(mock => mock.ReadDataNode(It.IsAny<string>()), Times.Exactly(3));
             Assert.Contains("KaRecipes.M02.DB_00_Parameters.single22", removedNodes);
@@ -66,26 +68,26 @@ namespace KaRecipes.BL.Changeover.Tests
         RawRecipe GetSampleRecipe() 
         {
 
-            List<ParameterStation> stations1 = new();
-            ParameterSingle single11 = new() { Name = "single11", Value = "11" };
-            ParameterSingle single12 = new() { Name = "single12", Value = "12" };
-            List<ParameterSingle> singles1 = new();
+            List<StationData> stations1 = new();
+            SingleParamData single11 = new() { Name = "single11", Value = "11" };
+            SingleParamData single12 = new() { Name = "single12", Value = "12" };
+            List<SingleParamData> singles1 = new();
             singles1.Add(single11);
             singles1.Add(single12);
-            stations1.Add(new() { Name = "M01_DB_00_Parameters", ParameterSingles = singles1 });
+            stations1.Add(new() { Name = "M01_DB_00_Parameters", Params = singles1 });
 
-            List<ParameterStation> stations2 = new();
-            ParameterSingle single21 = new() { Name = "single21", Value = "21" };
-            ParameterSingle single22 = new() { Name = "single22", Value = "22" };
-            List<ParameterSingle> singles2 = new();
+            List<StationData> stations2 = new();
+            SingleParamData single21 = new() { Name = "single21", Value = "21" };
+            SingleParamData single22 = new() { Name = "single22", Value = "22" };
+            List<SingleParamData> singles2 = new();
             singles2.Add(single21);
             singles2.Add(single22);
-            stations2.Add(new() { Name = "M02_DB_00_Parameters", ParameterSingles = singles2 });
+            stations2.Add(new() { Name = "M02_DB_00_Parameters", Params = singles2 });
 
             RawRecipe recipe = new();
             recipe.ParameterModules = new();
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
+            recipe.ParameterModules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
+            recipe.ParameterModules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
             return recipe;
         }
     }

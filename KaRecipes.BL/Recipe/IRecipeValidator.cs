@@ -1,13 +1,13 @@
-﻿using KaRecipes.BL.RecipeAggregate;
+﻿using KaRecipes.BL.Data.RecipeAggregate;
 using System;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.Changeover
+namespace KaRecipes.BL.Recipe
 {
     public interface IRecipeValidator
     {
         event EventHandler<string> RemovedUnknownParameter;
 
-        Task<Recipe> Validate(RawRecipe sourceRecipe);
+        Task<RecipeData> Validate(RawRecipe sourceRecipe);
     }
 }

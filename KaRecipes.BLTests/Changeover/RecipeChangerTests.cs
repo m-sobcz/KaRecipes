@@ -7,8 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
 using Moq;
-using KaRecipes.BL.RecipeAggregate;
 using KellermanSoftware.CompareNetObjects;
+using KaRecipes.BL.Data.RecipeAggregate;
+using KaRecipes.BL.Data;
+using KaRecipes.BL.Recipe;
 
 namespace KaRecipes.BL.Changeover.Tests
 {
@@ -19,8 +21,8 @@ namespace KaRecipes.BL.Changeover.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            Recipe recipe = GetSampleRecipe();
-            Recipe eventRecipe = new();
+            RecipeData recipe = GetSampleRecipe();
+            RecipeData eventRecipe = new();
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
             recipeChanger.ActualRecipeChanged += (sender, recipe) => eventRecipe = recipe;
             //Act
@@ -29,16 +31,16 @@ namespace KaRecipes.BL.Changeover.Tests
             recipeChanger.Initialize(GetSampleRecipe());
             recipeChanger.Update(plcDataReceivedEventArgs);
             //Assert
-            Assert.Equal(123, recipeChanger.ActualRecipe.ParameterModules
-                .Where(x => x.Name == "M01").FirstOrDefault().ParameterStations
-                .Where(x => x.Name == "DB_00_Parameters").FirstOrDefault().ParameterSingles
+            Assert.Equal(123, recipeChanger.ActualRecipe.Modules
+                .Where(x => x.Name == "M01").FirstOrDefault().Stations
+                .Where(x => x.Name == "DB_00_Parameters").FirstOrDefault().Params
                 .Where(x => x.Name == "single11").FirstOrDefault().Value);
             CompareLogic compareLogic = new();
             var comparison = compareLogic.Compare(recipeChanger.ActualRecipe, eventRecipe);
             Assert.True(comparison.AreEqual);
         }
 
-        private void RecipeChanger_ActualRecipeChanged(object sender, Recipe e)
+        private void RecipeChanger_ActualRecipeChanged(object sender, RecipeData e)
         {
             throw new NotImplementedException();
         }
@@ -59,7 +61,7 @@ namespace KaRecipes.BL.Changeover.Tests
             expectedNodes.Add(new DataNode() { NodeId = "KaRecipes.M02.DB_00_Parameters.single21", Value = "21" });
             expectedNodes.Add(new DataNode() { NodeId = "KaRecipes.M02.DB_00_Parameters.single22", Value = "22" });
 
-            Recipe recipe = GetSampleRecipe();
+            RecipeData recipe = GetSampleRecipe();
 
             //Act
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
@@ -79,7 +81,7 @@ namespace KaRecipes.BL.Changeover.Tests
 
             mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
 
-            Recipe recipe = GetSampleRecipe();
+            RecipeData recipe = GetSampleRecipe();
 
             HashSet<string> expectedNodes = new();
             expectedNodes.Add("KaRecipes.M01.DB_00_Parameters.single11");
@@ -107,58 +109,58 @@ namespace KaRecipes.BL.Changeover.Tests
         public void ReadFromPlc_ProperExecution()
         {
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            mockPlcDataAccess.Setup(x => x.ReadDataNode(It.IsAny<string>())).ReturnsAsync(new ParameterSingle() { Name = "test", Value = "1" });
-            List<ParameterStation> stations1 = new();
-            ParameterSingle single11 = new() { Name = "single11", Value = "1" };
-            ParameterSingle single12 = new() { Name = "single12", Value = "1" };
-            List<ParameterSingle> singles1 = new();
+            mockPlcDataAccess.Setup(x => x.ReadDataNode(It.IsAny<string>())).ReturnsAsync(new SingleParamData() { Name = "test", Value = "1" });
+            List<StationData> stations1 = new();
+            SingleParamData single11 = new() { Name = "single11", Value = "1" };
+            SingleParamData single12 = new() { Name = "single12", Value = "1" };
+            List<SingleParamData> singles1 = new();
             singles1.Add(single11);
             singles1.Add(single12);
-            stations1.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles1 });
+            stations1.Add(new() { Name = "DB_00_Parameters", Params = singles1 });
 
-            List<ParameterStation> stations2 = new();
-            ParameterSingle single21 = new() { Name = "single21", Value = "1" };
-            ParameterSingle single22 = new() { Name = "single22", Value = "1" };
-            List<ParameterSingle> singles2 = new();
+            List<StationData> stations2 = new();
+            SingleParamData single21 = new() { Name = "single21", Value = "1" };
+            SingleParamData single22 = new() { Name = "single22", Value = "1" };
+            List<SingleParamData> singles2 = new();
             singles2.Add(single21);
             singles2.Add(single22);
-            stations2.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles2 });
+            stations2.Add(new() { Name = "DB_00_Parameters", Params = singles2 });
 
-            Recipe expectedRecipe = new();
-            expectedRecipe.ParameterModules = new();
-            expectedRecipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
-            expectedRecipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
+            RecipeData expectedRecipe = new();
+            expectedRecipe.Modules = new();
+            expectedRecipe.Modules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
+            expectedRecipe.Modules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
             //Act
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
             recipeChanger.Initialize(GetSampleRecipe());
-            Recipe actualRecipe = recipeChanger.ReadFromPlc().Result;
+            RecipeData actualRecipe = recipeChanger.ReadFromPlc().Result;
             //Assert
             CompareLogic compareLogic = new();
             var comparison = compareLogic.Compare(expectedRecipe, actualRecipe);
             Assert.True(comparison.AreEqual);
         }
-        Recipe GetSampleRecipe() 
+        RecipeData GetSampleRecipe() 
         {
-            List<ParameterStation> stations1 = new();
-            ParameterSingle single11 = new() { Name = "single11", Value = "11" };
-            ParameterSingle single12 = new() { Name = "single12", Value = "12" };
-            List<ParameterSingle> singles1 = new();
+            List<StationData> stations1 = new();
+            SingleParamData single11 = new() { Name = "single11", Value = "11" };
+            SingleParamData single12 = new() { Name = "single12", Value = "12" };
+            List<SingleParamData> singles1 = new();
             singles1.Add(single11);
             singles1.Add(single12);
-            stations1.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles1 });
+            stations1.Add(new() { Name = "DB_00_Parameters", Params = singles1 });
 
-            List<ParameterStation> stations2 = new();
-            ParameterSingle single21 = new() { Name = "single21", Value = "21" };
-            ParameterSingle single22 = new() { Name = "single22", Value = "22" };
-            List<ParameterSingle> singles2 = new();
+            List<StationData> stations2 = new();
+            SingleParamData single21 = new() { Name = "single21", Value = "21" };
+            SingleParamData single22 = new() { Name = "single22", Value = "22" };
+            List<SingleParamData> singles2 = new();
             singles2.Add(single21);
             singles2.Add(single22);
-            stations2.Add(new() { Name = "DB_00_Parameters", ParameterSingles = singles2 });
+            stations2.Add(new() { Name = "DB_00_Parameters", Params = singles2 });
 
-            Recipe recipe = new();
-            recipe.ParameterModules = new();
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M01", ParameterStations = stations1 });
-            recipe.ParameterModules.Add(new ParameterModule() { Name = "M02", ParameterStations = stations2 });
+            RecipeData recipe = new();
+            recipe.Modules = new();
+            recipe.Modules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
+            recipe.Modules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
             return recipe;
         }
     }

@@ -1,5 +1,4 @@
 ﻿using KaRecipes.BL.Interfaces;
-using KaRecipes.BL.PlcRequest;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.PlcRequest
+namespace KaRecipes.BL.Part
 {
     public abstract class Request : IRequest
     {

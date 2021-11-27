@@ -1,13 +1,9 @@
 ﻿using Xunit;
-using KaRecipes.BL.Services;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
 using Moq;
-using KaRecipes.BL.AlarmAggregate;
+using KaRecipes.BL.Data.AlarmAggregate;
 
 namespace KaRecipes.BL.Services.Tests
 {
@@ -19,14 +15,14 @@ namespace KaRecipes.BL.Services.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            Mock<IDbDataAccess<Alarm>> mockDbDataAccess = new();
-            List<Alarm> alarmsSentToDbWrite = new();
-            mockDbDataAccess.Setup(x => x.Write(It.IsAny<Alarm>())).Callback<Alarm>(
+            Mock<IDbDataAccess<AlarmData>> mockDbDataAccess = new();
+            List<AlarmData> alarmsSentToDbWrite = new();
+            mockDbDataAccess.Setup(x => x.Write(It.IsAny<AlarmData>())).Callback<AlarmData>(
                 x => alarmsSentToDbWrite.Add(x));
-            Dictionary<string, Alarm> alarms = new();
-            alarms.Add("KaRecipes.M01.DB_00_Parameters.single1", new Alarm() { NodeId = "KaRecipes.M01.DB_00_Parameters.single1" });
-            alarms.Add("KaRecipes.M01.DB_00_Parameters.single2", new Alarm() { NodeId = "KaRecipes.M01.DB_00_Parameters.single2" });
-            alarms.Add("KaRecipes.M01.DB_00_Parameters.single3", new Alarm() { NodeId = "KaRecipes.M01.DB_00_Parameters.single3" });
+            Dictionary<string, AlarmData> alarms = new();
+            alarms.Add("KaRecipes.M01.DB_00_Parameters.single1", new AlarmData() { NodeId = "KaRecipes.M01.DB_00_Parameters.single1" });
+            alarms.Add("KaRecipes.M01.DB_00_Parameters.single2", new AlarmData() { NodeId = "KaRecipes.M01.DB_00_Parameters.single2" });
+            alarms.Add("KaRecipes.M01.DB_00_Parameters.single3", new AlarmData() { NodeId = "KaRecipes.M01.DB_00_Parameters.single3" });
             AlarmsService alarmsService = new(mockPlcDataAccess.Object, mockDbDataAccess.Object);
             //Act
             alarmsService.Start(alarms);

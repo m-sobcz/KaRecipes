@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
 using Moq;
+using KaRecipes.BL.Data;
 
 namespace KaRecipes.BL.Services.Tests
 {

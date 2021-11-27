@@ -9,7 +9,7 @@
         xmlns:local="clr-namespace:KaRecipes.UI.Views"
         xmlns:vm="clr-namespace:KaRecipes.UI.ViewModels"
         xmlns:model="clr-namespace:KaRecipes.UI.Models"
-        xmlns:recipe="clr-namespace:KaRecipes.BL.RecipeAggregate;assembly=KaRecipes.BL"
+        xmlns:recipe="clr-namespace:KaRecipes.BL.Data.RecipeAggregate;assembly=KaRecipes.BL"
         xmlns:convert="clr-namespace:KaRecipes.UI.Converters"
         xmlns:behavior="clr-namespace:KaRecipes.UI.Behaviors" 
 
@@ -33,20 +33,20 @@
         <DockPanel>
         <TreeView Name="Recipe" ItemsSource="{Binding ParameterModules}">
             <d:TreeView.ItemsSource>
-                <x:Array Type="{x:Type recipe:ParameterModule}">
-                    <recipe:ParameterModule Name="M01"/>
-                    <recipe:ParameterModule Name="M02"/>
-                    <recipe:ParameterModule Name="M03"/>
+                <x:Array Type="{x:Type recipe:ModuleData}">
+                    <recipe:ModuleData Name="M01"/>
+                    <recipe:ModuleData Name="M02"/>
+                    <recipe:ModuleData Name="M03"/>
                 </x:Array>
             </d:TreeView.ItemsSource>
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type recipe:ParameterModule}" ItemsSource="{Binding ParameterStations}">
+                <HierarchicalDataTemplate DataType="{x:Type recipe:ModuleData}" ItemsSource="{Binding ParameterStations}">
                     <TreeViewItem Header="{Binding Name}"></TreeViewItem>
                 </HierarchicalDataTemplate>
-                <HierarchicalDataTemplate DataType="{x:Type recipe:ParameterStation}" ItemsSource="{Binding ParameterSingles}">
+                <HierarchicalDataTemplate DataType="{x:Type recipe:StationData}" ItemsSource="{Binding ParameterSingles}">
                     <TreeViewItem Header="{Binding Name}"></TreeViewItem>
                 </HierarchicalDataTemplate>
-                <DataTemplate DataType="{x:Type recipe:ParameterSingle}">
+                <DataTemplate DataType="{x:Type recipe:SingleParamData}">
                     <WrapPanel Orientation="Horizontal">
                         <TextBlock Text="{Binding Name}"></TextBlock>
                         <TextBox Text="{Binding Value, Mode=TwoWay}"></TextBox>

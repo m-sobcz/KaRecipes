@@ -1,4 +1,4 @@
-﻿using KaRecipes.BL.AlarmAggregate;
+﻿using KaRecipes.BL.Data.AlarmAggregate;
 using KaRecipes.BL.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -11,17 +11,17 @@ namespace KaRecipes.BL.Services
     public class AlarmsService : IObserver
     {
         IPlcDataAccess plcDataAccess;
-        IDbDataAccess<Alarm> dbDataAccess;
-        public Dictionary<string, Alarm> Alarms { get; private set; }
+        IDbDataAccess<AlarmData> dbDataAccess;
+        public Dictionary<string, AlarmData> Alarms { get; private set; }
         public int PublishingInterval => 1000;
 
-        public AlarmsService(IPlcDataAccess plcDataAccess, IDbDataAccess<Alarm> dbDataAccess)
+        public AlarmsService(IPlcDataAccess plcDataAccess, IDbDataAccess<AlarmData> dbDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
             this.dbDataAccess = dbDataAccess;
         }
 
-        public void Start(Dictionary<string, Alarm> alarms)
+        public void Start(Dictionary<string, AlarmData> alarms)
         {
             this.Alarms = alarms;
             List<string> keys = alarms.Keys.ToList();
@@ -30,7 +30,7 @@ namespace KaRecipes.BL.Services
 
         public void Update(PlcDataReceivedEventArgs subject)
         {
-            if (Alarms.TryGetValue(subject.Name, out Alarm alarm))
+            if (Alarms.TryGetValue(subject.Name, out AlarmData alarm))
             {
                 var comparableAlarm = alarm.Value as IComparable;
                 bool valueChanged = comparableAlarm?.CompareTo(subject.Value)!=0;

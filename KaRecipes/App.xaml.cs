@@ -1,4 +1,4 @@
-﻿using KaRecipes.BL.Serialize;
+﻿using KaRecipes.BL.Recipe;
 using KaRecipes.UI.Models;
 using KaRecipes.UI.ViewModels;
 using KaRecipes.UI.Views;

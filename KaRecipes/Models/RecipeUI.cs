@@ -1,4 +1,4 @@
-﻿using KaRecipes.BL.RecipeAggregate;
+﻿using KaRecipes.BL.Data.RecipeAggregate;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,11 +10,11 @@ namespace KaRecipes.UI.Models
 {
     public class RecipeUI
     {
-        public ObservableCollection<ParameterModule> ParameterModules { get; set; }
+        public ObservableCollection<ModuleData> ParameterModules { get; set; }
 
-        public RecipeUI(Recipe recipe)
+        public RecipeUI(RecipeData recipe)
         {
-            ParameterModules = new(recipe.ParameterModules);
+            ParameterModules = new(recipe.Modules);
         }
 
     }

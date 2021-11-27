@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.MachineStateAggregate
+namespace KaRecipes.BL.Data.MachineStateAggregate
 {
-    public class MachineState : DataNode
+    public class MachineStateData : DataNode
     {
         public string Module { get; set; }
         public string Station { get; set; }

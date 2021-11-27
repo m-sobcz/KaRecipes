@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.AlarmAggregate
+namespace KaRecipes.BL.Data.AlarmAggregate
 {
-    public class Alarm : DataNode
+    public class AlarmData : DataNode
     {
         public string Description { get; set; }
     }

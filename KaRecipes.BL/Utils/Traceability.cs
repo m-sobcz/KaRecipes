@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL
+namespace KaRecipes.BL.Utils
 {
     public static class Traceability
     {
