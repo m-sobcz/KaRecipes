@@ -1,4 +1,5 @@
-﻿using KaRecipes.BL.Interfaces;
+﻿using KaRecipes.BL.Data.RequestAggregate;
+using KaRecipes.BL.Interfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -27,21 +28,29 @@ namespace KaRecipes.BL.Part
             bool executed = await Execute();
             if (executed)
             {
-                Acknowedgle.Value = true;
-                await plcDataAccess.WriteDataNode(Acknowedgle);
+                await SetRequest(Acknowedgle);
             }
             else
             {
-                Error.Value = true;
-                await plcDataAccess.WriteDataNode(Error);
+                await SetRequest(Error);
             }
         }
         public async Task ExecuteStop()
         {
-            Acknowedgle.Value = false;
-            await plcDataAccess.WriteDataNode(Acknowedgle);
-            Error.Value = false;
-            await plcDataAccess.WriteDataNode(Error);
+            await ResetRequest(Acknowedgle);
+            await ResetRequest(Error);
+        }
+        protected async Task<bool> SetRequest(RequestData requestData) 
+        {
+            requestData.Value = true;
+            bool success=await plcDataAccess.WriteDataNode(requestData);
+            return success;
+        }
+        protected async Task<bool> ResetRequest(RequestData requestData)
+        {
+            requestData.Value = false;
+            bool success = await plcDataAccess.WriteDataNode(requestData);
+            return success;
         }
         public abstract Task<bool> Execute();
     }

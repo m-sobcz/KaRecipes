@@ -14,14 +14,14 @@ namespace KaRecipes.BL.Services
     {
         IRecipeChanger recipeChanger;
         IRecipeValidator recipeValidator;
-        IDbDataAccess<RecipeData> dbDataAccess;
+        IDbWrite<RecipeData> dbDataAccess;
         IRawRecipeSerializer recipeSerializer;
         RecipeData fileRecipe;
 
         public RecipeData ActualRecipe => recipeChanger.ActualRecipe;
 
         public RecipeService(IRecipeChanger recipeChanger, IRecipeValidator recipeValidator,
-            IRawRecipeSerializer recipeSerializer, IDbDataAccess<RecipeData> dbDataAccess)
+            IRawRecipeSerializer recipeSerializer, IDbWrite<RecipeData> dbDataAccess)
         {
             this.recipeChanger = recipeChanger;
             this.recipeValidator = recipeValidator;

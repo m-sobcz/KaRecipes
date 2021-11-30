@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Data.PartAggregate
 {
-    public class PartData
+    public class StationData
     {
         public List<DataNode> DataNodes { get; set; }
         public string Module { get; set; }

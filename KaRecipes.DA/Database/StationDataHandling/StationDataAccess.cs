@@ -7,21 +7,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.DA.Database.PartDataHandling
+namespace KaRecipes.DA.Database.StationDataHandling
 {
-    public class PartDataAccess : IDbDataAccess<PartData>
+    public class StationDataAccess : IDbWrite<StationData>
     {
         ISqlDataAccess sqlDataAccess;
-        public PartDataAccess(ISqlDataAccess sqlDataAccess)
+        public StationDataAccess(ISqlDataAccess sqlDataAccess)
         {
             this.sqlDataAccess = sqlDataAccess;
         }
-        public Task<PartData> Read(object id)
+
+        public Task<StationData> Read(object id, string module, string station)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int?> Write(PartData data)
+        public Task<int?> Write(StationData data)
         {
             throw new NotImplementedException();
         }

@@ -8,14 +8,15 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.DA.Database.Logic
 {
-    class PartDataProcessor : IDbDataAccess<PartData>
+    class StationDataProcessor : IDbWrite<StationData>
     {
-        public Task<PartData> Read(object id)
+
+        public Task<StationData> Read(object id, string module, string station)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int?> Write(PartData data)
+        public Task<int?> Write(StationData data)
         {
             throw new NotImplementedException();
         }

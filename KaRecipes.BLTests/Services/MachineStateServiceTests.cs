@@ -18,7 +18,7 @@ namespace KaRecipes.BL.Services.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new ();
-            Mock<IDbDataAccess<MachineStateData>> mockDbDataAccess = new();
+            Mock<IDbWrite<MachineStateData>> mockDbDataAccess = new();
             MachineStateService machineStateService = new(mockPlcDataAccess.Object, mockDbDataAccess.Object);
             //Act
             Dictionary<string, MachineStateData> machineStates = new();
@@ -38,7 +38,7 @@ namespace KaRecipes.BL.Services.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new();
-            Mock<IDbDataAccess<MachineStateData>> mockDbDataAccess = new();
+            Mock<IDbWrite<MachineStateData>> mockDbDataAccess = new();
             MachineStateService machineStateService = new(mockPlcDataAccess.Object, mockDbDataAccess.Object);
             //Act
             Dictionary<string, MachineStateData> machineStates = new();

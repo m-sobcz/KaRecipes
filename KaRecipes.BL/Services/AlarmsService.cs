@@ -11,11 +11,11 @@ namespace KaRecipes.BL.Services
     public class AlarmsService : IObserver
     {
         IPlcDataAccess plcDataAccess;
-        IDbDataAccess<AlarmData> dbDataAccess;
+        IDbWrite<AlarmData> dbDataAccess;
         public Dictionary<string, AlarmData> Alarms { get; private set; }
         public int PublishingInterval => 1000;
 
-        public AlarmsService(IPlcDataAccess plcDataAccess, IDbDataAccess<AlarmData> dbDataAccess)
+        public AlarmsService(IPlcDataAccess plcDataAccess, IDbWrite<AlarmData> dbDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
             this.dbDataAccess = dbDataAccess;

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Part
 {
-    class ReadRequest : Request
+    class ReadStationRequest : Request
     {
-        IDbDataAccess<PartData> dbDataAccess;
+        IDbReadStation<StationData> dbDataAccess;
         string module;
         string station;
-        public ReadRequest(IDbDataAccess<PartData> dbDataAccess, IPlcDataAccess plcDataAccess, string module, string station) : base(plcDataAccess)
+        public ReadStationRequest(IDbReadStation<StationData> dbDataAccess, IPlcDataAccess plcDataAccess, string module, string station) : base(plcDataAccess)
         {
             this.dbDataAccess = dbDataAccess;
             this.module = module;
@@ -21,10 +21,10 @@ namespace KaRecipes.BL.Part
         }
         public override async Task<bool> Execute()
         {
-            PartData dataReceived = await dbDataAccess.Read(PartId);
+            StationData dataReceived = await dbDataAccess.Read(PartId,module,station);
             foreach (var item in dataReceived.DataNodes)
             {
-                Data.Values.Where(x => x.Name == item.Name).FirstOrDefault().Value = item.Value;
+                Data.Values.FirstOrDefault(x => x.Name == item.Name).Value = item.Value;
             }
             await plcDataAccess.WriteDataNodes(dataReceived.DataNodes);
             return dataReceived.DataNodes.Count > 0;

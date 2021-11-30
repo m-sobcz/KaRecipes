@@ -12,8 +12,8 @@ namespace KaRecipes.BL.Services
     {
         Dictionary<string, MachineStateData> machineStates;
         IPlcDataAccess plcDataAccess;
-        IDbDataAccess<MachineStateData> dbDataAccess;
-        public MachineStateService(IPlcDataAccess plcDataAccess, IDbDataAccess<MachineStateData> dbDataAccess)
+        IDbWrite<MachineStateData> dbDataAccess;
+        public MachineStateService(IPlcDataAccess plcDataAccess, IDbWrite<MachineStateData> dbDataAccess)
         {
             this.plcDataAccess = plcDataAccess;
             this.dbDataAccess = dbDataAccess;

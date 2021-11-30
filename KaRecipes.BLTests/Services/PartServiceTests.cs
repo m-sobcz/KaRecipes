@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using KaRecipes.BL.Interfaces;
 using Moq;
 using KaRecipes.BL.Part;
+using KaRecipes.BL.Data.RequestAggregate;
 
 namespace KaRecipes.BL.Services.Tests
 {
-    public class PartDataServiceTests
+    public class PartServiceTests
     {
         [Fact()]
         public void PartDataServiceTest_RequestStart_OnceAfter()

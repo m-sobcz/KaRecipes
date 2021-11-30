@@ -1,4 +1,5 @@
-﻿using KaRecipes.BL.Interfaces;
+﻿using KaRecipes.BL.Data.RequestAggregate;
+using KaRecipes.BL.Interfaces;
 using KaRecipes.BL.Part;
 using System;
 using System.Collections.Concurrent;

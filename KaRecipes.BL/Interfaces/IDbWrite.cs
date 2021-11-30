@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Interfaces
 {
-    public interface IDbDataAccess<T>
+    public interface IDbWrite<T>
     {
-        Task<T> Read(object id);
         Task<int?> Write(T data);
     }
 }

@@ -15,7 +15,7 @@ namespace KaRecipes.BL.Services.Tests
         {
             //Arrange
             Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            Mock<IDbDataAccess<AlarmData>> mockDbDataAccess = new();
+            Mock<IDbWrite<AlarmData>> mockDbDataAccess = new();
             List<AlarmData> alarmsSentToDbWrite = new();
             mockDbDataAccess.Setup(x => x.Write(It.IsAny<AlarmData>())).Callback<AlarmData>(
                 x => alarmsSentToDbWrite.Add(x));
