@@ -14,7 +14,7 @@ namespace KaRecipes.BL.Services
         public CancellationTokenSource StopNotifyingTokenSource { get; private set; }
         IPlcDataAccess plcDataAccess;
         List<DataNode> dataNodes;
-        public int Interval { get; set; } = 1000;
+        public int Interval { get; set; }= 1000;
         public LifeBitService(IPlcDataAccess plcDataAccess)
         {
             this.plcDataAccess = plcDataAccess;

@@ -1,5 +1,7 @@
 ﻿using KaRecipes.BL.Data.AlarmAggregate;
 using KaRecipes.BL.Interfaces;
+using KaRecipes.BL.Utils;
+using KellermanSoftware.CompareNetObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,7 @@ namespace KaRecipes.BL.Services
     {
         IPlcDataAccess plcDataAccess;
         IDbWrite<AlarmData> dbDataAccess;
+        CompareLogic compare = new();
         public Dictionary<string, AlarmData> Alarms { get; private set; }
         public int PublishingInterval => 1000;
 
@@ -32,15 +35,13 @@ namespace KaRecipes.BL.Services
         {
             if (Alarms.TryGetValue(subject.Name, out AlarmData alarm))
             {
-                var comparableAlarm = alarm.Value as IComparable;
-                bool valueChanged = comparableAlarm?.CompareTo(subject.Value)!=0;
+                bool valueChanged = compare.Compare(alarm.Value, subject.Value).AreEqual == false;
                 alarm.Value = subject.Value;
                 if (valueChanged) dbDataAccess.Write(alarm);
             }
             else
             {
-                throw new ArgumentException("Received unknown subject name: " + subject.Name);
-                //Traceability.Notify(subject);
+                Traceability.Notify(subject);
             }
         }
     }

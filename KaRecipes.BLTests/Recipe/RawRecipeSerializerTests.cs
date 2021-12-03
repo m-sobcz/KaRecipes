@@ -1,21 +1,16 @@
 ﻿using Xunit;
+using KaRecipes.BL.Recipe;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.IO;
-using System.Xml.Linq;
-using System.Xml;
-using System.Diagnostics;
+using KaRecipes.BL.Data.RecipeAggregate;
 using KellermanSoftware.CompareNetObjects;
 
-using KaRecipes.BL.Recipe;
-using KaRecipes.BL.Data.RecipeAggregate;
-
-namespace KaRecipes.BL.Recipes.Tests
+namespace KaRecipes.BL.Recipe.Tests
 {
-    public class RecipeSerializerTests
+    public class RawRecipeSerializerTests
     {
         [Fact()]
         public void Deserialize_SampleData_AreEqual()
@@ -38,7 +33,8 @@ namespace KaRecipes.BL.Recipes.Tests
 ";
             RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
-            var expected = new RawRecipe() {
+            var expected = new RawRecipe()
+            {
                 ParameterModules = new List<ModuleData>
             {
                 new ModuleData()
@@ -97,7 +93,7 @@ namespace KaRecipes.BL.Recipes.Tests
   </ParameterGroups>
 </Parameters>";
             RawRecipeSerializer recipeSerializer = new();
-            var result=recipeSerializer.Deserialize(xml);
+            var result = recipeSerializer.Deserialize(xml);
             Assert.Empty(result.ParameterModules);
         }
         [Fact()]
@@ -146,7 +142,7 @@ namespace KaRecipes.BL.Recipes.Tests
             Assert.Equal(expected, actual);
         }
         [Fact()]
-        public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId() 
+        public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId()
         {
             RawRecipeSerializer recipeSerializer = new();
             RawRecipe recipe = new();
@@ -155,6 +151,5 @@ namespace KaRecipes.BL.Recipes.Tests
             Assert.Equal(12345, recipe.VersionId);
             recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"D:\Users\MISO\Desktop\2upz.xp0");
         }
-
     }
 }

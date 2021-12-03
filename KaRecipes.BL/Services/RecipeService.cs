@@ -36,10 +36,10 @@ namespace KaRecipes.BL.Services
             //Task.Run(()=>dbDataAccess.Write(recipeChanger.ActualRecipe));
         }
 
-        async Task<RecipeData> Deserialize(string serialized) 
-        {
+        RecipeData Deserialize(string serialized, Dictionary<string, Type> recipeNodes) 
+        {      
             RawRecipe rawRecipe =recipeSerializer.Deserialize(serialized);
-            fileRecipe = await recipeValidator.Validate(rawRecipe);
+            fileRecipe = recipeValidator.Validate(rawRecipe, recipeNodes);
             return fileRecipe;
         }
         async Task Load (RecipeData recipe) 

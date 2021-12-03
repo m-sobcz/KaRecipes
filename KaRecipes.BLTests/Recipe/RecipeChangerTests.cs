@@ -72,32 +72,7 @@ namespace KaRecipes.BL.Changeover.Tests
             var comparison = compareLogic.Compare(expectedNodes, executedNodes);
             Assert.True(comparison.AreEqual);
         }
-        [Fact()]
-        public void WriteToPlc_IncorrectNodes_RaiseEvents()
-        {
-            //Arrange
-            Mock<IPlcDataAccess> mockPlcDataAccess = new Mock<IPlcDataAccess>();
-            mockPlcDataAccess.Setup(x => x.WriteDataNodes(It.IsAny<List<DataNode>>())).ReturnsAsync(false);
 
-            mockPlcDataAccess.SetupGet(x => x.PlcAccessPrefix).Returns("KaRecipes");
-
-            RecipeData recipe = GetSampleRecipe();
-
-            HashSet<string> expectedNodes = new();
-            expectedNodes.Add("KaRecipes.M01.DB_00_Parameters.single11");
-            expectedNodes.Add("KaRecipes.M01.DB_00_Parameters.single12");
-            expectedNodes.Add("KaRecipes.M02.DB_00_Parameters.single21");
-            expectedNodes.Add("KaRecipes.M02.DB_00_Parameters.single22");
-
-            //Act
-            RecipeChanger recipeChanger = new(mockPlcDataAccess.Object);
-            HashSet<string> actualFailedNodes = new();
-            recipeChanger.WriteToPlc(recipe).Wait();
-            //Assert
-            CompareLogic compareLogic = new();
-            var comparison = compareLogic.Compare(expectedNodes, actualFailedNodes);
-            Assert.True(comparison.AreEqual);
-        }
         [Fact()]
         public void ReadFromPlc_WithoutInitialization_ThrowsInvalidOpException() 
         {

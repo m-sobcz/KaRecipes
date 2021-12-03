@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KaRecipes.BL.Recipe
+namespace KaRecipes.BL.Data.RecipeAggregate
 {
     public class RawRecipe
     {

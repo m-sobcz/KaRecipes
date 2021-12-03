@@ -31,9 +31,11 @@ namespace KaRecipes.DA.OPC
         readonly string nodeIdPrefix = "KaRecipes";
         public event EventHandler<PlcDataReceivedEventArgs> OpcDataReceived;
         Dictionary<uint, IObserver> observers = new();
-        public Dictionary<string, string> AvailableNodes;
 
-        readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
+    private HashSet<string> availableNodes;
+
+
+    readonly Regex nodeNameRegex = new(@"(?<=\.)\w+\b(?!\.)", RegexOptions.Compiled);
 
         public string PlcAccessPrefix => nodeIdPrefix;
 
@@ -130,16 +132,16 @@ namespace KaRecipes.DA.OPC
         {
             return await WriteDataNodes(new List<DataNode>() { dataNode });
         }
-        public async Task<Dictionary<string, string>> GetAvailableNodes()
+        public async Task<HashSet<string>> GetAvailableNodes()
         {
-            AvailableNodes = new();
+            availableNodes = new();
             var root = new NodeId(nodeIdPrefix, namespaceIndex);
             await Task.Run(()=>DeepBrowseNode(root));     
-            return AvailableNodes;
+            return availableNodes;
         }
         public void DeepBrowseNode(NodeId nodeToBrowse) 
         {
-                session.Browse(
+            session.Browse(
                     null,
                     null,
                     nodeToBrowse,
@@ -148,13 +150,13 @@ namespace KaRecipes.DA.OPC
                     ReferenceTypeIds.HierarchicalReferences,
                     true,
                     (uint)NodeClass.Variable | (uint)NodeClass.Object | (uint)NodeClass.Method,
-                    out byte[] nextCp,
+                    out _,
                     out ReferenceDescriptionCollection stationRefs);
                 foreach (var stationRef in stationRefs)
                 {                    
                     if (stationRef.DisplayName.Text.StartsWith("_") == false)
                     {
-                        AvailableNodes.Add(stationRef.NodeId.Identifier.ToString(), stationRef.DisplayName.ToString());
+                        availableNodes.Add(stationRef.NodeId.Identifier.ToString());
                         var nodeId = ExpandedNodeId.ToNodeId(stationRef.NodeId, session.NamespaceUris);
                         DeepBrowseNode(nodeId);
                     }

@@ -12,17 +12,13 @@ namespace KaRecipes.BL.Recipe
 {
     public class RecipeValidator : IRecipeValidator
     {
-        IPlcDataAccess plcDataAccess;
-        public event EventHandler<string> RemovedUnknownParameter;
+        public event EventHandler<string> UnknownParameterFound;
+        public event EventHandler<string> UnsetParameterFound;
         static Regex stationRegex = new(@"DB.+", RegexOptions.Compiled);
-        public RecipeValidator(IPlcDataAccess plcDataAccess)
-        {
-            this.plcDataAccess = plcDataAccess;
-        }
-        public async Task<RecipeData> Validate(RawRecipe sourceRecipe)
+        readonly string pathPrefix = "KaRecipes";
+        public RecipeData Validate(RawRecipe sourceRecipe, Dictionary<string, Type> recipeNodes)
         {
             RecipeData converted = new() { Modules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
-            Dictionary<string, string> availableNodes = await plcDataAccess.GetAvailableNodes();
             foreach (var module in converted.Modules)
             {
                 foreach (var station in module.Stations)
@@ -30,31 +26,38 @@ namespace KaRecipes.BL.Recipe
                     foreach (var parameter in station.Params.ToList())
                     {
                         var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
-                        if (availableNodes.TryGetValue(path, out string _))
+                        if (recipeNodes.Remove(path, out Type type))
                         {
-                            var readVal = await plcDataAccess.ReadDataNode(path);
-                            var newConvertedVal = Convert.ChangeType(parameter.Value, readVal.Value.GetType());
+                            var newConvertedVal = Convert.ChangeType(parameter.Value, type);
                             parameter.Value = newConvertedVal;
                         }
                         else
                         {
                             station.Params.Remove(parameter);
-                            OnRemovedUnknownParameter(path);
+                            OnUnknownParameterFound(path);
                         }
-                    }
+                    }             
                 }
+            }
+            foreach (var node in recipeNodes.Keys)
+            {
+                OnUnsetParameterFound(node);
             }
             return converted;
         }
         string GetRawNodeIdentifier(string module, string station, string parameter)
         {
             string stationName = stationRegex.Match(station).Value;
-            string path = $"{plcDataAccess.PlcAccessPrefix}.{module}.{stationName}.{parameter}";
+            string path = $"{pathPrefix}.{module}.{stationName}.{parameter}";
             return path;
         }
-        void OnRemovedUnknownParameter(string recipeId)
+        void OnUnknownParameterFound(string recipeId)
         {
-            RemovedUnknownParameter?.Invoke(this, recipeId);
+            UnknownParameterFound?.Invoke(this, recipeId);
+        }
+        void OnUnsetParameterFound(string recipeId)
+        {
+            UnsetParameterFound?.Invoke(this, recipeId);
         }
     }
 }

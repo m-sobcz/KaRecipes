@@ -1,13 +1,15 @@
 ﻿using KaRecipes.BL.Data.RecipeAggregate;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace KaRecipes.BL.Recipe
 {
     public interface IRecipeValidator
     {
-        event EventHandler<string> RemovedUnknownParameter;
+        event EventHandler<string> UnknownParameterFound;
+        event EventHandler<string> UnsetParameterFound;
 
-        Task<RecipeData> Validate(RawRecipe sourceRecipe);
+        RecipeData Validate(RawRecipe sourceRecipe, Dictionary<string, Type> recipeNodes);
     }
 }
