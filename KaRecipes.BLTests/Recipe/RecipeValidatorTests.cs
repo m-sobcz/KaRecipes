@@ -15,7 +15,7 @@ namespace KaRecipes.BL.Recipe.Tests
     public class RecipeValidatorTests
     {
         [Fact()]
-        public void Validate_CorrectRecipe_NoEvents()
+        public void Validate_CorrectRecipe_NoParametersNotFound()
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
@@ -26,17 +26,13 @@ namespace KaRecipes.BL.Recipe.Tests
             recipeNodes.Add("KaRecipes.M02.DB_00_Parameters.single21", typeof(string));
             recipeNodes.Add("KaRecipes.M02.DB_00_Parameters.single22", typeof(string));
             //Act
-            HashSet<string> unknownParameters = new();
-            HashSet<string> unsetParmeters = new();
-            recipeVerificator.UnknownParameterFound += (sender, nodeId) => unknownParameters.Add(nodeId);
-            recipeVerificator.UnsetParameterFound+= (sender, nodeId) => unsetParmeters.Add(nodeId);
             RecipeData convertedRecipe = recipeVerificator.Validate(inputRecipe, recipeNodes);
             //Assert
-            Assert.Empty(unknownParameters);
-            Assert.Empty(unsetParmeters);
+            Assert.Empty(convertedRecipe.UnknownParametersFound);
+            Assert.Empty(convertedRecipe.UnsetParametersFound);
         }
         [Fact()]
-        public void Validate_OneParameterUnset_FiresEvent()
+        public void Validate_OneParameterUnset_ExistInCollection()
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
@@ -46,17 +42,13 @@ namespace KaRecipes.BL.Recipe.Tests
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single12", typeof(string));
             recipeNodes.Add("KaRecipes.M02.DB_00_Parameters.single21", typeof(string));
             //Act
-            HashSet<string> unknownParameters = new();
-            HashSet<string> unsetParmeters = new();
-            recipeVerificator.UnknownParameterFound += (sender, nodeId) => unknownParameters.Add(nodeId);
-            recipeVerificator.UnsetParameterFound += (sender, nodeId) => unsetParmeters.Add(nodeId);
             RecipeData convertedRecipe = recipeVerificator.Validate(inputRecipe, recipeNodes);
             //Assert
-            Assert.Contains("KaRecipes.M02.DB_00_Parameters.single22", unknownParameters);
-            Assert.Empty(unsetParmeters);
+            Assert.Contains("KaRecipes.M02.DB_00_Parameters.single22", convertedRecipe.UnknownParametersFound);
+            Assert.Empty(convertedRecipe.UnsetParametersFound);
         }
         [Fact()]
-        public void Validate_OneParameterNotFound_FiresEvent()
+        public void Validate_OneParameterNotFound_ExistInCollection()
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
@@ -68,14 +60,10 @@ namespace KaRecipes.BL.Recipe.Tests
             recipeNodes.Add("KaRecipes.M02.DB_00_Parameters.single21", typeof(string));
             recipeNodes.Add("KaRecipes.M02.DB_00_Parameters.single22", typeof(string));
             //Act
-            HashSet<string> unknownParameters = new();
-            HashSet<string> unsetParmeters = new();
-            recipeVerificator.UnknownParameterFound += (sender, nodeId) => unknownParameters.Add(nodeId);
-            recipeVerificator.UnsetParameterFound += (sender, nodeId) => unsetParmeters.Add(nodeId);
             RecipeData convertedRecipe = recipeVerificator.Validate(inputRecipe, recipeNodes);
             //Assert      
-            Assert.Empty(unknownParameters);
-            Assert.Contains("KaRecipes.M01.DB_00_Parameters.single11", unsetParmeters);
+            Assert.Empty(convertedRecipe.UnknownParametersFound);
+            Assert.Contains("KaRecipes.M01.DB_00_Parameters.single11", convertedRecipe.UnsetParametersFound);
         }
 
         RawRecipe GetSampleRecipe()

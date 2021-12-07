@@ -12,8 +12,6 @@ namespace KaRecipes.BL.Recipe
 {
     public class RecipeValidator : IRecipeValidator
     {
-        public event EventHandler<string> UnknownParameterFound;
-        public event EventHandler<string> UnsetParameterFound;
         static Regex stationRegex = new(@"DB.+", RegexOptions.Compiled);
         readonly string pathPrefix = "KaRecipes";
         public RecipeData Validate(RawRecipe sourceRecipe, Dictionary<string, Type> recipeNodes)
@@ -34,15 +32,12 @@ namespace KaRecipes.BL.Recipe
                         else
                         {
                             station.Params.Remove(parameter);
-                            OnUnknownParameterFound(path);
+                            converted.UnknownParametersFound.Add(path);
                         }
                     }             
                 }
             }
-            foreach (var node in recipeNodes.Keys)
-            {
-                OnUnsetParameterFound(node);
-            }
+            converted.UnsetParametersFound.AddRange(recipeNodes.Keys);
             return converted;
         }
         string GetRawNodeIdentifier(string module, string station, string parameter)
@@ -50,14 +45,6 @@ namespace KaRecipes.BL.Recipe
             string stationName = stationRegex.Match(station).Value;
             string path = $"{pathPrefix}.{module}.{stationName}.{parameter}";
             return path;
-        }
-        void OnUnknownParameterFound(string recipeId)
-        {
-            UnknownParameterFound?.Invoke(this, recipeId);
-        }
-        void OnUnsetParameterFound(string recipeId)
-        {
-            UnsetParameterFound?.Invoke(this, recipeId);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using KaRecipes.BL.Data.RecipeAggregate;
 using KaRecipes.BL.Interfaces;
 using KaRecipes.BL.Recipe;
+using KaRecipes.BL.Utils;
 using KellermanSoftware.CompareNetObjects;
 using System;
 using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace KaRecipes.BL.Services
             this.dbDataAccess = dbDataAccess;
             recipeChanger.ActualRecipeChanged += RecipeChanger_ActualRecipeChanged;
         }
+
 
         private void RecipeChanger_ActualRecipeChanged(object sender, RecipeData e)
         {

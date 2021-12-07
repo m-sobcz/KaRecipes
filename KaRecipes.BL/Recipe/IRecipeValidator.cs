@@ -7,9 +7,6 @@ namespace KaRecipes.BL.Recipe
 {
     public interface IRecipeValidator
     {
-        event EventHandler<string> UnknownParameterFound;
-        event EventHandler<string> UnsetParameterFound;
-
         RecipeData Validate(RawRecipe sourceRecipe, Dictionary<string, Type> recipeNodes);
     }
 }

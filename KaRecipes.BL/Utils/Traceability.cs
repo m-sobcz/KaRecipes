@@ -15,5 +15,9 @@ namespace KaRecipes.BL.Utils
         {
             Trace.WriteLine($"Caller: {callerName} unable to handle data: {subject.Name} with value: {subject.Value}");
         }
+        public static void Notify(string message, [CallerMemberName] string callerName = "")
+        {
+            Trace.WriteLine($"Caller: {callerName} reports error: {message}");
+        }
     }
 }
