@@ -29,9 +29,9 @@ namespace KaRecipes.BL.Services
             commands = new();
             foreach (var item in requests)
             {
-                foreach (var readData in item.Data)
+                foreach (RequestData readData in item.Data.DataNodes)
                 {
-                    dataNodes.Add(readData.Key, readData.Value);
+                    dataNodes.Add(readData.NodeId, readData);
                 }
                 dataNodes.TryAdd(item.PartId.NodeId, item.PartId);
                 dataNodes.Add(item.Command.NodeId, item.Command);
@@ -58,7 +58,7 @@ namespace KaRecipes.BL.Services
             if (actual==true && actual!=previous)
             {
                 //commandNode.ParentRequest.TargetId = dataNodes.GetValueOrDefault(commandNode.ParentRequest.TargetId.NodeId);
-                commandNode.ParentRequest.ExecuteStart();
+                commandNode.ParentRequest.ExecuteStart(commandNode.ParentRequest.Data);
             }
             if (actual == false && actual != previous)
             {

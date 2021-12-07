@@ -1,4 +1,5 @@
-﻿using KaRecipes.BL.Data.RequestAggregate;
+﻿using KaRecipes.BL.Data.PartAggregate;
+using KaRecipes.BL.Data.RequestAggregate;
 using KaRecipes.BL.Interfaces;
 using System;
 using System.Collections.Concurrent;
@@ -7,26 +8,28 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace KaRecipes.BL.Part
 {
-    public abstract class Request : IRequest
+    public class Request : IRequest
     {
-        public Dictionary<string, RequestData> Data { get; set; }
+        public PartData Data { get; set; }
         public RequestData Command { get; set; }
         public RequestData Acknowedgle { get; set; }
         public RequestData Error { get; set; }
         public RequestData PartId { get; set; }
-
+        protected IRequestCommand command; 
         protected IPlcDataAccess plcDataAccess;
-        public Request(IPlcDataAccess plcDataAccess)
+        public Request(IPlcDataAccess plcDataAccess, IRequestCommand command)
         {
             this.plcDataAccess = plcDataAccess;
+            this.command = command;
         }
-        public async Task ExecuteStart()
+        public async Task ExecuteStart(PartData stationData)
         {
-            bool executed = await Execute();
-            if (executed)
+            var returnedObject = await command.Execute(stationData);
+            if (returnedObject != null)
             {
                 await SetRequest(Acknowedgle);
             }
@@ -52,6 +55,6 @@ namespace KaRecipes.BL.Part
             bool success = await plcDataAccess.WriteDataNode(requestData);
             return success;
         }
-        public abstract Task<bool> Execute();
+
     }
 }

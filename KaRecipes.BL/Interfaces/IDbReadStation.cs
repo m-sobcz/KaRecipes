@@ -8,6 +8,6 @@ namespace KaRecipes.BL.Interfaces
 {
     interface IDbReadStation<T>
     {
-        Task<T> Read(object id, string module, string station);
+        Task<T> Read(T objectToFill);
     }
 }

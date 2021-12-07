@@ -9,6 +9,7 @@ using KaRecipes.BL.Interfaces;
 using Moq;
 using KaRecipes.BL.Part;
 using KaRecipes.BL.Data.RequestAggregate;
+using KaRecipes.BL.Data.PartAggregate;
 
 namespace KaRecipes.BL.Services.Tests
 {
@@ -23,10 +24,11 @@ namespace KaRecipes.BL.Services.Tests
             mockRequest.SetupGet(x => x.Command).Returns(new RequestData() { NodeId = "KaRecipes.M01.DB_00_Parameters.singleC", ParentRequest=mockRequest.Object });
             mockRequest.SetupGet(x => x.PartId).Returns(new RequestData() { NodeId = "KaRecipes.M01.DB_00_Parameters.partId" });
 
-            var data = new Dictionary<string, RequestData>();
-            data.Add("KaRecipes.M01.DB_00_Parameters.single1", new RequestData() { });
-            data.Add("KaRecipes.M01.DB_00_Parameters.single2", new RequestData() { });
-            mockRequest.SetupGet(x => x.Data).Returns(()=>data);
+            PartData partData = new();
+            partData.DataNodes = new();
+            partData.DataNodes.Add(new RequestData() {NodeId="KaRecipes.M01.DB_00_Parameters.single1" });
+            partData.DataNodes.Add(new RequestData() { NodeId = "KaRecipes.M01.DB_00_Parameters.single2" });
+            mockRequest.SetupGet(x => x.Data).Returns(()=>partData);
             PartService partDataService = new(mockPlcDataAccess.Object);
             List<IRequest> requests = new();
             requests.Add(mockRequest.Object);
@@ -39,7 +41,7 @@ namespace KaRecipes.BL.Services.Tests
             partDataService.Update(plcDataReceivedEventArgs);
             //Assert
             mockPlcDataAccess.Verify(x => x.CreateSubscriptionsWithInterval(It.IsAny<List<string>>(), It.IsAny<int>(), It.IsAny<IObserver>()), Times.Once);
-            mockRequest.Verify(x => x.ExecuteStart(), Times.Once);
+            mockRequest.Verify(x => x.ExecuteStart(It.IsAny<PartData>()), Times.Once);
         }
     }
 }

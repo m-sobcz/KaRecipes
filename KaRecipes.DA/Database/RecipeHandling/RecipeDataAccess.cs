@@ -22,5 +22,10 @@ namespace KaRecipes.DA.Database.RecipeHandling
         {
             throw new NotImplementedException();
         }
+
+        Task<RecipeData> IDbWrite<RecipeData>.Write(RecipeData data)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -8,6 +8,6 @@ namespace KaRecipes.BL.Interfaces
 {
     public interface IDbWrite<T>
     {
-        Task<int?> Write(T data);
+        Task<T> Write(T data);
     }
 }

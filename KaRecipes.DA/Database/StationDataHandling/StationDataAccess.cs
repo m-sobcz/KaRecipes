@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace KaRecipes.DA.Database.StationDataHandling
 {
-    public class StationDataAccess : IDbWrite<StationData>
+    public class StationDataAccess : IDbWrite<PartData>
     {
         ISqlDataAccess sqlDataAccess;
         public StationDataAccess(ISqlDataAccess sqlDataAccess)
@@ -17,12 +17,17 @@ namespace KaRecipes.DA.Database.StationDataHandling
             this.sqlDataAccess = sqlDataAccess;
         }
 
-        public Task<StationData> Read(object id, string module, string station)
+        public Task<PartData> Read(object id, string module, string station)
         {
             throw new NotImplementedException();
         }
 
-        public Task<int?> Write(StationData data)
+        public Task<int?> Write(PartData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<PartData> IDbWrite<PartData>.Write(PartData data)
         {
             throw new NotImplementedException();
         }
