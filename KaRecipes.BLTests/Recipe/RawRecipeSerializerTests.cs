@@ -33,16 +33,14 @@ namespace KaRecipes.BL.Recipe.Tests
 ";
             RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
-            var expected = new RawRecipeData();
-            ModuleData M11 = new("M11");
+            var expected = new RawRecipeData();  
+            ModuleData M11 = expected.AddModule("M11");
             var M11_DB_00_Parameters=M11.AddStation("M11_DB_00_Parameters");
             M11_DB_00_Parameters.AddParam("ActualType", null, "0");
             M11_DB_00_Parameters.AddParam("MachineCycleTime", null, "4500");
             var M11_DB_01_Parameters = M11.AddStation("M11_DB_01_Parameters");
             M11_DB_01_Parameters.AddParam("LR_LR_aktiv", null, "False");
-            ModuleData M15 = new("M15");
-            expected.Modules.Add(M11);
-            expected.Modules.Add(M15);
+            ModuleData M15 =  expected.AddModule("M15");
             CompareLogic compareLogic = new();
             var comparison = compareLogic.Compare(expected, result);
             Assert.True(comparison.AreEqual);
@@ -63,16 +61,15 @@ namespace KaRecipes.BL.Recipe.Tests
         public void Serialize_SampleData()
         {
             RecipeData recipe = new();
-            ModuleData module1 = new ModuleData("M01");
+            ModuleData module1 = recipe.AddModule("M01");
             var station1 = module1.AddStation("DB_00_Parameters");
             station1.AddParam("single11", "KaRecipes.M01.single11", "11");
             station1.AddParam("single12", "KaRecipes.M01.single12", "12");
-            ModuleData module2 = new ModuleData("M02");
+            ModuleData module2 = recipe.AddModule("M02");
             var station2 = module2.AddStation("DB_00_Parameters");
             station2.AddParam("single21", "KaRecipes.M02.single21", "21");
             station2.AddParam("single22", "KaRecipes.M02.single22", "22");
-            recipe.Modules.Add(module1);
-            recipe.Modules.Add(module2);
+
 
             RawRecipeSerializer recipeSerializer = new();
             string actual = recipeSerializer.Serialize(recipe);

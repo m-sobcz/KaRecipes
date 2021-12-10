@@ -13,5 +13,11 @@ namespace KaRecipes.BL.Data.RecipeAggregate
         public List<ModuleData> Modules { get; set; } = new();
         public int? VersionId { get; set; }
         public string Name { get; set; }
+        public ModuleData AddModule(string name)
+        {
+            ModuleData moduleData = new(this, name);
+            Modules.Add(moduleData);
+            return moduleData;
+        }
     }
 }

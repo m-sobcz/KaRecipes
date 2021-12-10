@@ -77,16 +77,14 @@ namespace KaRecipes.BL.Changeover.Tests
             mockPlcDataAccess.Setup(x => x.ReadDataNode("KaRecipes.M02.DB_00_Parameters.single22")).ReturnsAsync(new DataNode() { Value = "122" });
 
             RecipeData expectedRecipe = new();
-            ModuleData module1 = new ModuleData("M01");
+            ModuleData module1 = expectedRecipe.AddModule("M01");
             var station1 = module1.AddStation("DB_00_Parameters");
             station1.AddParam("single11", "KaRecipes.M01.DB_00_Parameters.single11", "111");
             station1.AddParam("single12", "KaRecipes.M01.DB_00_Parameters.single12", "112");
-            ModuleData module2 = new ModuleData("M02");
+            ModuleData module2 = expectedRecipe.AddModule("M02");
             var station2 = module2.AddStation("DB_00_Parameters");
             station2.AddParam("single21", "KaRecipes.M02.DB_00_Parameters.single21", "121");
             station2.AddParam("single22", "KaRecipes.M02.DB_00_Parameters.single22", "122");
-            expectedRecipe.Modules.Add(module1);
-            expectedRecipe.Modules.Add(module2);
             //Act
             RecipeChanger recipeChanger = new(mockPlcDataAccess.Object, GetSampleRecipe());
             RecipeData actualRecipe = recipeChanger.ReadFromPlc().Result;
@@ -98,16 +96,14 @@ namespace KaRecipes.BL.Changeover.Tests
         RecipeData GetSampleRecipe() 
         {
             RecipeData recipe = new();
-            ModuleData module1 = new ModuleData("M01");
+            ModuleData module1 = recipe.AddModule("M01");
             var station1 = module1.AddStation("DB_00_Parameters");
             station1.AddParam("single11", "KaRecipes.M01.DB_00_Parameters.single11", "11");
             station1.AddParam("single12", "KaRecipes.M01.DB_00_Parameters.single12", "12");
-            ModuleData module2 = new ModuleData("M02");
+            ModuleData module2 = recipe.AddModule("M02");
             var station2 = module2.AddStation("DB_00_Parameters");
             station2.AddParam("single21", "KaRecipes.M02.DB_00_Parameters.single21", "21");
             station2.AddParam("single22", "KaRecipes.M02.DB_00_Parameters.single22", "22");
-            recipe.Modules.Add(module1);
-            recipe.Modules.Add(module2);
             return recipe;
         }
     }

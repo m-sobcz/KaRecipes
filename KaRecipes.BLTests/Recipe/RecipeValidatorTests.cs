@@ -68,17 +68,15 @@ namespace KaRecipes.BL.Recipe.Tests
 
         RawRecipeData GetSampleRecipe()
         {
-            RawRecipeData recipe = new();
-            ModuleData module1 = new ModuleData("M01");
+            RawRecipeData recipe = new();        
+            ModuleData module1 = recipe.AddModule("M01");
             var station1 = module1.AddStation("DB_00_Parameters");
             station1.AddParam("single11", "KaRecipes.M01.DB_00_Parameters.single11", "11");
             station1.AddParam("single12", "KaRecipes.M01.DB_00_Parameters.single12", "12");
-            ModuleData module2 = new ModuleData("M02");
+            ModuleData module2 = recipe.AddModule("M02");
             var station2 = module2.AddStation("DB_00_Parameters");
             station2.AddParam("single21", "KaRecipes.M02.DB_00_Parameters.single21", "21");
             station2.AddParam("single22", "KaRecipes.M02.DB_00_Parameters.single22", "22");
-            recipe.Modules.Add(module1);
-            recipe.Modules.Add(module2);
             return recipe;
         }
     }

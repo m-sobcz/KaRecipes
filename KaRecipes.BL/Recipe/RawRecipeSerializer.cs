@@ -25,20 +25,18 @@ namespace KaRecipes.BL.Recipe
             RawRecipeData recipe = new();
             foreach (var loadedModule in loadedModules)
             {
-                ModuleData newParameterModule = LoadParameterModule(loadedModule);
-                recipe.Modules.Add(newParameterModule);
+               LoadParameterModule(recipe,loadedModule);
             }
             return recipe;
         }
-        ModuleData LoadParameterModule(XElement loadedModule)
+        void LoadParameterModule(RawRecipeData recipe, XElement loadedModule)
         {
-            ModuleData newParameterModule = new(loadedModule.Attribute(groupNameAttribute).Value);
+            ModuleData newParameterModule = recipe.AddModule(loadedModule.Attribute(groupNameAttribute).Value);
             foreach (var loadedStation in loadedModule.Elements())
             {
                 StationData newParameterStation = LoadParameterStation(loadedStation, newParameterModule);
                 newParameterModule.Stations.Add(newParameterStation);
             }
-            return newParameterModule;
         }
         StationData LoadParameterStation(XElement loadedStation, ModuleData moduleData)
         {
