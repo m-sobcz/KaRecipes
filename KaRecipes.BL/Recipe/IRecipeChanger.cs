@@ -9,8 +9,8 @@ namespace KaRecipes.BL.Recipe
     {
         event EventHandler<RecipeData> ActualRecipeChanged;
         public RecipeData ActualRecipe { get; set; }
-        void Initialize(RecipeData recipeTemplate);
         Task<RecipeData> ReadFromPlc();
         Task WriteToPlc(RecipeData recipe);
+        Task<RecipeData> Subscribe(RecipeData recipe);
     }
 }

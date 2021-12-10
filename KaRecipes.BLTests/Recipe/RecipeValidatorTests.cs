@@ -19,7 +19,7 @@ namespace KaRecipes.BL.Recipe.Tests
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
-            RawRecipe inputRecipe = GetSampleRecipe();
+            RawRecipeData inputRecipe = GetSampleRecipe();
             Dictionary<string, Type> recipeNodes = new();
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single11", typeof(string));
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single12", typeof(string));
@@ -36,7 +36,7 @@ namespace KaRecipes.BL.Recipe.Tests
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
-            RawRecipe inputRecipe = GetSampleRecipe();
+            RawRecipeData inputRecipe = GetSampleRecipe();
             Dictionary<string, Type> recipeNodes = new();
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single11", typeof(string));
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single12", typeof(string));
@@ -52,8 +52,8 @@ namespace KaRecipes.BL.Recipe.Tests
         {
             //Arrange
             RecipeValidator recipeVerificator = new();
-            RawRecipe inputRecipe = GetSampleRecipe();
-            inputRecipe.ParameterModules.First().Stations.First().Params.RemoveAt(0);
+            RawRecipeData inputRecipe = GetSampleRecipe();
+            inputRecipe.Modules.First().Stations.First().Params.RemoveAt(0);
             Dictionary<string, Type> recipeNodes = new();
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single11", typeof(string));
             recipeNodes.Add("KaRecipes.M01.DB_00_Parameters.single12", typeof(string));
@@ -66,29 +66,19 @@ namespace KaRecipes.BL.Recipe.Tests
             Assert.Contains("KaRecipes.M01.DB_00_Parameters.single11", convertedRecipe.UnsetParametersFound);
         }
 
-        RawRecipe GetSampleRecipe()
+        RawRecipeData GetSampleRecipe()
         {
-
-            List<StationData> stations1 = new();
-            SingleParamData single11 = new() { Name = "single11", Value = "11" };
-            SingleParamData single12 = new() { Name = "single12", Value = "12" };
-            List<SingleParamData> singles1 = new();
-            singles1.Add(single11);
-            singles1.Add(single12);
-            stations1.Add(new() { Name = "M01_DB_00_Parameters", Params = singles1 });
-
-            List<StationData> stations2 = new();
-            SingleParamData single21 = new() { Name = "single21", Value = "21" };
-            SingleParamData single22 = new() { Name = "single22", Value = "22" };
-            List<SingleParamData> singles2 = new();
-            singles2.Add(single21);
-            singles2.Add(single22);
-            stations2.Add(new() { Name = "M02_DB_00_Parameters", Params = singles2 });
-
-            RawRecipe recipe = new();
-            recipe.ParameterModules = new();
-            recipe.ParameterModules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
-            recipe.ParameterModules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
+            RawRecipeData recipe = new();
+            ModuleData module1 = new ModuleData("M01");
+            var station1 = module1.AddStation("DB_00_Parameters");
+            station1.AddParam("single11", "KaRecipes.M01.DB_00_Parameters.single11", "11");
+            station1.AddParam("single12", "KaRecipes.M01.DB_00_Parameters.single12", "12");
+            ModuleData module2 = new ModuleData("M02");
+            var station2 = module2.AddStation("DB_00_Parameters");
+            station2.AddParam("single21", "KaRecipes.M02.DB_00_Parameters.single21", "21");
+            station2.AddParam("single22", "KaRecipes.M02.DB_00_Parameters.single22", "22");
+            recipe.Modules.Add(module1);
+            recipe.Modules.Add(module2);
             return recipe;
         }
     }

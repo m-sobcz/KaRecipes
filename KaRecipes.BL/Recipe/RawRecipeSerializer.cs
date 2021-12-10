@@ -18,47 +18,40 @@ namespace KaRecipes.BL.Recipe
         readonly string parameterNameAttribute = "name";
         readonly string parameterValueAttribute = "value";
 
-        public RawRecipe Deserialize(string text)
+        public RawRecipeData Deserialize(string text)
         {
             var root = XElement.Parse(text);
             var loadedModules = root.Elements().Elements();
-            RawRecipe recipe = new();
+            RawRecipeData recipe = new();
             foreach (var loadedModule in loadedModules)
             {
                 ModuleData newParameterModule = LoadParameterModule(loadedModule);
-                recipe.ParameterModules.Add(newParameterModule);
+                recipe.Modules.Add(newParameterModule);
             }
             return recipe;
         }
         ModuleData LoadParameterModule(XElement loadedModule)
         {
-            ModuleData newParameterModule = new()
-            {
-                Name = loadedModule.Attribute(groupNameAttribute).Value
-            };
+            ModuleData newParameterModule = new(loadedModule.Attribute(groupNameAttribute).Value);
             foreach (var loadedStation in loadedModule.Elements())
             {
-                StationData newParameterStation = LoadParameterStation(loadedStation);
+                StationData newParameterStation = LoadParameterStation(loadedStation, newParameterModule);
                 newParameterModule.Stations.Add(newParameterStation);
             }
             return newParameterModule;
         }
-        StationData LoadParameterStation(XElement loadedStation)
+        StationData LoadParameterStation(XElement loadedStation, ModuleData moduleData)
         {
-            StationData newParameterStation = new()
-            {
-                Name = loadedStation.Attribute(groupNameAttribute).Value
-            };
+            StationData newParameterStation = new(moduleData, loadedStation.Attribute(groupNameAttribute).Value);
             foreach (var loadedParameter in loadedStation.Elements())
             {
                 var name = loadedParameter.Attribute(parameterNameAttribute).Value;
                 var value = loadedParameter.Attribute(parameterValueAttribute).Value;
-                SingleParamData newParameterSingle = new() { Name = name, Value = value };
-                newParameterStation.Params.Add(newParameterSingle);
+                newParameterStation.Params.Add(new SingleParamData(newParameterStation,name,null) {Value = value });
             }
             return newParameterStation;
         }
-        public void FillRecipeWithHeaderInfo(RawRecipe recipe, string headerInfo)
+        public void FillRecipeWithHeaderInfo(RawRecipeData recipe, string headerInfo)
         {
             Regex regex = new(@".+\\([^_,\.]+)_?([^\.]+)?");
             var match = regex.Match(headerInfo);

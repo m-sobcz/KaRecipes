@@ -40,13 +40,12 @@ namespace KaRecipes.BL.Services
 
         RecipeData Deserialize(string serialized, Dictionary<string, Type> recipeNodes) 
         {      
-            RawRecipe rawRecipe =recipeSerializer.Deserialize(serialized);
+            RawRecipeData rawRecipe =recipeSerializer.Deserialize(serialized);
             fileRecipe = recipeValidator.Validate(rawRecipe, recipeNodes);
             return fileRecipe;
         }
         async Task Load (RecipeData recipe) 
         {
-            recipeChanger.Initialize(recipe);
             await recipeChanger.WriteToPlc(recipe);
             await dbDataAccess.Write(recipeChanger.ActualRecipe);
         } 

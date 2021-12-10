@@ -22,7 +22,7 @@ namespace KaRecipes.BL.Recipe.Tests
         <Parameter name=""ActualType"" value=""0"" />
         <Parameter name=""MachineCycleTime"" value=""4500"" />
       </ParameterGroup>
-      <ParameterGroup name=""M11_DB_01_Param"">
+      <ParameterGroup name=""M11_DB_01_Parameters"">
         <Parameter name=""LR_LR_aktiv"" value=""False"" />
       </ParameterGroup>
     </ParameterGroup>
@@ -33,53 +33,16 @@ namespace KaRecipes.BL.Recipe.Tests
 ";
             RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
-            var expected = new RawRecipe()
-            {
-                ParameterModules = new List<ModuleData>
-            {
-                new ModuleData()
-                {
-                   Name="M11",
-                   Stations=new List<StationData>()
-                   {
-                       new StationData()
-                       {
-                           Name="M11_DB_00_Parameters",
-                           Params=new List<SingleParamData>()
-                           {
-                               new SingleParamData()
-                               {
-                                   Name="ActualType",
-                                   Value="0"
-                               },
-                               new SingleParamData()
-                               {
-                                   Name="MachineCycleTime",
-                                   Value="4500"
-                               }
-                           }
-                       },
-                       new StationData()
-                       {
-                           Name="M11_DB_01_Param",
-                           Params=new List<SingleParamData>()
-                           {
-                               new SingleParamData()
-                               {
-                                   Name="LR_LR_aktiv",
-                                   Value="False"
-                               }
-                           }
-                       }
-                   }
-                },
-                new ModuleData()
-                {
-                   Name="M15",
-                   Stations=new List<StationData>()
-                }
-            }
-            };
+            var expected = new RawRecipeData();
+            ModuleData M11 = new("M11");
+            var M11_DB_00_Parameters=M11.AddStation("M11_DB_00_Parameters");
+            M11_DB_00_Parameters.AddParam("ActualType", null, "0");
+            M11_DB_00_Parameters.AddParam("MachineCycleTime", null, "4500");
+            var M11_DB_01_Parameters = M11.AddStation("M11_DB_01_Parameters");
+            M11_DB_01_Parameters.AddParam("LR_LR_aktiv", null, "False");
+            ModuleData M15 = new("M15");
+            expected.Modules.Add(M11);
+            expected.Modules.Add(M15);
             CompareLogic compareLogic = new();
             var comparison = compareLogic.Compare(expected, result);
             Assert.True(comparison.AreEqual);
@@ -94,31 +57,22 @@ namespace KaRecipes.BL.Recipe.Tests
 </Parameters>";
             RawRecipeSerializer recipeSerializer = new();
             var result = recipeSerializer.Deserialize(xml);
-            Assert.Empty(result.ParameterModules);
+            Assert.Empty(result.Modules);
         }
         [Fact()]
         public void Serialize_SampleData()
         {
-            List<StationData> stations1 = new();
-            SingleParamData single11 = new() { Name = "single11", Value = "11" };
-            SingleParamData single12 = new() { Name = "single12", Value = "12" };
-            List<SingleParamData> singles1 = new();
-            singles1.Add(single11);
-            singles1.Add(single12);
-            stations1.Add(new() { Name = "DB_00_Parameters", Params = singles1 });
-
-            List<StationData> stations2 = new();
-            SingleParamData single21 = new() { Name = "single21", Value = "21" };
-            SingleParamData single22 = new() { Name = "single22", Value = "22" };
-            List<SingleParamData> singles2 = new();
-            singles2.Add(single21);
-            singles2.Add(single22);
-            stations2.Add(new() { Name = "DB_00_Parameters", Params = singles2 });
-
             RecipeData recipe = new();
-            recipe.Modules = new();
-            recipe.Modules.Add(new ModuleData() { Name = "M01", Stations = stations1 });
-            recipe.Modules.Add(new ModuleData() { Name = "M02", Stations = stations2 });
+            ModuleData module1 = new ModuleData("M01");
+            var station1 = module1.AddStation("DB_00_Parameters");
+            station1.AddParam("single11", "KaRecipes.M01.single11", "11");
+            station1.AddParam("single12", "KaRecipes.M01.single12", "12");
+            ModuleData module2 = new ModuleData("M02");
+            var station2 = module2.AddStation("DB_00_Parameters");
+            station2.AddParam("single21", "KaRecipes.M02.single21", "21");
+            station2.AddParam("single22", "KaRecipes.M02.single22", "22");
+            recipe.Modules.Add(module1);
+            recipe.Modules.Add(module2);
 
             RawRecipeSerializer recipeSerializer = new();
             string actual = recipeSerializer.Serialize(recipe);
@@ -145,7 +99,7 @@ namespace KaRecipes.BL.Recipe.Tests
         public void FillRecipeWithHeaderInfo_DataCorrect_SetsNameAndVersionId()
         {
             RawRecipeSerializer recipeSerializer = new();
-            RawRecipe recipe = new();
+            RawRecipeData recipe = new();
             recipeSerializer.FillRecipeWithHeaderInfo(recipe, @"C:\Users\MISO\Desktop\2up_12345.xp0");
             Assert.Equal("2up", recipe.Name);
             Assert.Equal(12345, recipe.VersionId);

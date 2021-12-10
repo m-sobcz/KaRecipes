@@ -14,16 +14,17 @@ namespace KaRecipes.BL.Recipe
     {
         static Regex stationRegex = new(@"DB.+", RegexOptions.Compiled);
         readonly string pathPrefix = "KaRecipes";
-        public RecipeData Validate(RawRecipe sourceRecipe, Dictionary<string, Type> recipeNodes)
+        public RecipeData Validate(RawRecipeData sourceRecipe, Dictionary<string, Type> recipeNodes)
         {
-            RecipeData converted = new() { Modules = sourceRecipe.ParameterModules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
+            RecipeData converted = new() { Modules = sourceRecipe.Modules, Name = sourceRecipe.Name, VersionId = sourceRecipe.VersionId };
             foreach (var module in converted.Modules)
             {
                 foreach (var station in module.Stations)
                 {
                     foreach (var parameter in station.Params.ToList())
                     {
-                        var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
+                        String path = parameter.NodeId;              
+                        //var path = GetRawNodeIdentifier(module.Name, station.Name, parameter.Name);
                         if (recipeNodes.Remove(path, out Type type))
                         {
                             var newConvertedVal = Convert.ChangeType(parameter.Value, type);
